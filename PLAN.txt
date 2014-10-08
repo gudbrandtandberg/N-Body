@@ -1,0 +1,24 @@
+Bodies (up to N):
+
+part 1 - solar system++:
+	Sun
+
+	Mercury
+	...
+	Uranus
+
+	Moon
+	Phobos
+	Deimos
+	Giovian moons
+
+	Halley's
+
+
+Elements of the project:
+
+	GUI for selecting bodies and choosing T
+	Program solves the eq'ns and plots trajectories
+	adaptive timestep
+	optional improvements: tree/particle mesh 
+	different step() methods
