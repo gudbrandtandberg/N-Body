@@ -2,6 +2,8 @@
 #define ODE_H
 
 #include"NBody_functions.h"
+#include"Body.h"
+#include<fstream>
 
 /*
  *      NBodySolver v1.0
@@ -10,12 +12,14 @@
  * for 0 < t < T in n solution steps. 
  * f is a 6xN system of first order eqns
  */
-
+#include<armadillo>
 
 using arma::vec;
 using arma::mat;
 using arma::norm;
-using std::vec;
+using std::vector;
+using std::ifstream;
+using std::fstream;
 
 class NBodySolver;
 

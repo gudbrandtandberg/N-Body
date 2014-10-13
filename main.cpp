@@ -18,18 +18,22 @@ using arma::vec;
 using arma::mat;
 using arma::norm;
 
-int main(int argc, char argv[])
+int main(int argc, char **argv)
 {
 	
 	// some particular test-case:
 	int T = 1;
 	double dt = 0.1;
 	mat (*gravity)(vector<Body>) = gravity;
-	int N = 1;
+	int N = 3;
 	
 	
 	NBodySolver solver = NBodySolver(N, gravity, T, dt);
-	solver.setInitialConditions("earth_sun.csv");
-	solver.solve();
+	solver.setInitialConditions("sun_mercury_venus.csv");
+
+	solver.writeBodies("dummyfile");
+	
+	
+	
 	
 }
