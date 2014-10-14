@@ -30,6 +30,30 @@
 
 \section{Introduction to the N-body problem}
 
+\section{The first NBodySolver class}
+
+\section{Introduction to the numerical methods}
+\subsection{Euler's Method}
+\subsection{Runge Kutta 4}
+
+\section{Results for the extended solar system}
+
+\section{Extending NBodySolver to allow for different timesteps}
+
+\section{Refined results for the extended solar system}
+
+\section{Further development of the algorithm}
+\subsection{Parallellizing the code}
+\subsection{Faster gravity evaluations}
+\subsection{Close encounter regularization}
+
+\section{Starclusters and beyond...}
+\subsection{The initial configurations}
+\subsection{Results}
+
+\section{Graphics}
+
+\section{Conclusion}
 
 %====================BIBLIOGRAPHY===========================
 
@@ -43,6 +67,12 @@ Initialized git repo. Created files main.cpp, NBody\_functions.cpp/h, ODESolver.
 
 \emph{9.10.2014}.
 Started coding. Discussed many design choices with the group teachers. Renamed ODESolver to NBodySolver and wrote the class Body. Wrote stub implementations of key methods. The flow of the program is unravelling as I work. Plan for the nearest future: get NBodySolver to work using Eulers method and a simple 2-body initial configuration.  
+
+\emph{13.10.2014}.
+Wrote matlab script that generates initial condition files for the solar system. Wrote methods for reading initial conditions and initializing the Solver. Wrote the eulerAdvance()-method and implemented brute force gravitational calculator. Ended up with promising plots with matlab of the solar system (albeit quite inaccurate..). Problem: allow gravity() to live in seperate file. 
+
+\emph{14.10.2014}
+
 
 %====================TODO====================================
 \newpage

@@ -1,9 +1,11 @@
 #ifndef ODE_H
 #define ODE_H
 
-#include"NBody_functions.h"
+//#include"NBody_functions.h"
 #include"Body.h"
 #include<fstream>
+#include<iostream>
+#include<armadillo>
 
 /*
  *      NBodySolver v1.0
@@ -12,14 +14,11 @@
  * for 0 < t < T in n solution steps. 
  * f is a 6xN system of first order eqns
  */
-#include<armadillo>
 
 using arma::vec;
 using arma::mat;
 using arma::norm;
-using std::vector;
-using std::ifstream;
-using std::fstream;
+using namespace std;
 
 class NBodySolver;
 
@@ -33,19 +32,22 @@ private:
 	double T;				// Final time
 	double dt;				// constant timestep
 	
-	mat (*rhs)(vector<Body>); // callable object representing the rhs.
+	mat (*rhs)(mat states, vec masses); // callable object representing the rhs.
 
 	vector<Body> bodies;
 	vector<Body> toStep;
+	mat states;
+	vec masses;
 
 	
 public:
+	
 	
 	/*
 	 * Constructor. Initializes the numerical paramaters
 	 */
 	
-	NBodySolver(int N, mat (*rhs)(vector<Body>), double T, double dt);
+	NBodySolver(int N, mat (*rhs)(mat states, vec masses), double T, double dt);
 	
 	/*
 	* Destructor. Destroy the system
@@ -77,6 +79,8 @@ public:
 	 */
 	
 	void writeBodies(const char * filename);
+	void writeBodies();
+	void writeBodyTrajectory();
 	
 };
 

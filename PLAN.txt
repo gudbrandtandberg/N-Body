@@ -1,24 +1,25 @@
-Bodies (up to N):
+Part 1 - Solar System++ (17 Bodies):
 
-part 1 - solar system++:
-	Sun
+1	Sun
+2	Mercury
+3	Venus
+4	Earth
+5	Mars
+6	Jupiter
+7	Saturn
+8	Neptune
+9	Uranus
+10	Pluto
+11	Moon
+12	Phobos
+13	Deimos
+14	Europa
+15	Ganymede
+16	Callisto
+17	Io
 
-	Mercury
-	...
-	Uranus
-
-	Moon
-	Phobos
-	Deimos
-	Giovian moons
-
-	Halley's
+18	Halley's
 
 
-Elements of the project:
 
-	GUI for selecting bodies and choosing T
-	Program solves the eq'ns and plots trajectories
-	adaptive timestep
-	optional improvements: tree/particle mesh 
-	different step() methods
+Part 2 - Starclusters and beyond (100 - 10^4 bodies):
