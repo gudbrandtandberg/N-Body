@@ -69,10 +69,16 @@ public:
 	void solve();
 
 	/*
-	 * Advance the solutions with appropriate method.
+	 * Advance the solutions with Euler's method.
 	 */
 	
 	void advanceEuler(double dt);
+	
+	/*
+	 * Advance the solutions with RK4 method.
+	 */
+	
+	void advanceRK4(double dt);
 	
 	/*
 	 * Iterate over the bodies and write them to .csv-file

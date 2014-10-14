@@ -58,12 +58,21 @@ void NBodySolver::setInitialConditions(const char* file){
 }
 	
 void NBodySolver::solve(){
-		
+	
+	// determine max and min timestep, and number of different
+	// timesteps, based on max and min initial accelleration.
+	// For example 10 different steps: [dtmax, dtmax/2, ... dtmax/2^9]
+	
 	while (global_t < T){
-	// determine timesteps
-	// quantize timesteps
-	// determine which bodies to advance, add them to toStep
-		advanceEuler(dt);
+
+	// quantize timesteps - make lists of which bodies should have which timesteps
+	// for dt in timesteps
+	//   for i in numberofstepsneededtocatchup
+	//	   advance(dt, toStep[dt])
+		
+	// also need to update times somehow...
+		
+		advanceRK4(dt);
 		global_t += dt;
 	}
 	
@@ -71,24 +80,39 @@ void NBodySolver::solve(){
 	
 void NBodySolver::advanceEuler(double dt){
 	
-	// create matrix of states = [[x y z vx vy vz] ... [x y z vx vy vz]]
-	// take a Euler-step
-	// update the bodies in toStep	
-	
-	//read states form bodies
+	//read states from bodies
 	
 	for (int i=0; i<N; i++){
 		states.col(i) = bodies[i].state;
 	}
 	
-	//cout << rhs(states, masses);
-	
 	states = states + dt*rhs(states, masses);
-	
 	
 	for (int i=0; i<N; i++){
 		 bodies[i].addState(states.col(i));
 	}
+	
+}
+
+void NBodySolver::advanceRK4(double dt){
+	
+	for (int i=0; i<N; i++){
+		states.col(i) = bodies[i].state;
+	}
+
+	double dt2 = dt/2;
+	
+	mat K1 = dt*rhs(states, masses);
+	mat K2 = dt*rhs(states+0.5*K1, masses);
+	mat K3 = dt*rhs(states+0.5*K2, masses);
+	mat K4 = dt*rhs(states+K3, masses);
+	
+	states = states + 1/6.0*(K1 + 2*K2 + 2*K3 + K4);
+	
+	for (int i=0; i<N; i++){
+		bodies[i].addState(states.col(i));
+	}
+
 	
 }
 
