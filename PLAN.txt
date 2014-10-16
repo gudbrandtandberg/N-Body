@@ -1,4 +1,4 @@
-Part 1 - Solar System++ (17 Bodies):
+Part 1 - Solar System++ (18 Bodies):
 
 1	Sun
 2	Mercury
@@ -13,11 +13,10 @@ Part 1 - Solar System++ (17 Bodies):
 11	Moon
 12	Phobos
 13	Deimos
-14	Europa
+14	Io
+15	Europa
 15	Ganymede
-16	Callisto
-17	Io
-
+16	Callisto	
 18	Halley's
 
 

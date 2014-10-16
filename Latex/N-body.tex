@@ -29,12 +29,15 @@
 \section{Abstract}
 
 \section{Introduction to the N-body problem}
+\subsection{The equations}
+\subsection{A brief history of N-Body simulations}
 
 \section{The first NBodySolver class}
 
 \section{Introduction to the numerical methods}
 \subsection{Euler's Method}
 \subsection{Runge Kutta 4}
+\subsection{Verlet method}
 
 \section{Results for the extended solar system}
 
@@ -74,6 +77,12 @@ Wrote matlab script that generates initial condition files for the solar system.
 \emph{14.10.2014}
 Added Pluto and Halley's comet. Wrote the method advanceRK4() with great success. Achieved stable trajectories for 11 bodies with T = 1000 weeks, dt = 0.05 weeks. 
 
+\emph{14.10.2014}
+Added Phobos \& Deimos. Phobos requires at most hourly timestep! This calls for adaptivity! Added the Giovian planets. Initial configuration is now complete. initial\_writer.m can write any selection of initial conditions for any part of the solar system to be sent to NBodySolver. Extremely satisfying results for the Giovian system. Stable trajectories. 
+
+\emph{15.10.2014}
+Regroup at the lab and start to think about the next steps. The next steps will be: 1) clean up \& comment the code 2) Start writing individual timestep implementation in new branch 3) Test the project again. [After that: parallellization]. 
+
 %====================TODO====================================
 \newpage
 
@@ -92,5 +101,15 @@ Write python script that generates the following initial conditions (and more!)
 \item randomly placed inside a sphere with tangential velocity/no velocity
 
 \end{itemize}
+
+\newpage
+\section{Lenker}
+http://en.wikipedia.org/wiki/Barnes\%E2\%80\%93Hut\_simulation\\
+http://en.wikipedia.org/wiki/N-body\_simulation\\
+http://trekto.info/n-body-simulation\\
+http://en.wikipedia.org/wiki/Plummer\_model\\
+http://burtleburtle.net/bob/math/multistep.html\\
+http://www.artcompsci.org/
+
 
 \end{document}  

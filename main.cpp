@@ -64,13 +64,13 @@ int main(int argc, char **argv)
 	int T = 100;
 	double dt = 0.01;
 	mat (*gr)(mat, vec) = gravity;
-	int N = 12;
+	int N = 18;
 
 	
 	NBodySolver solver = NBodySolver(N, gr, T, dt);
-	solver.setInitialConditions("./initial_conditions/solarsystem12.csv");
+	solver.setInitialConditions("./initial_conditions/solarsystem18.csv");
 	solver.solve();
-	solver.writeBodies("./trajectories/solarsystem12_trajectories.dat");
+	solver.writeBodies("./trajectories/solarsystem18_trajectories.dat");
 	
 	
 }
