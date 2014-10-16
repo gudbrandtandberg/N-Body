@@ -112,13 +112,9 @@ void NBodySolver::advanceRK4(double dt){
 	for (int i=0; i<N; i++){
 		bodies[i].addState(states.col(i));
 	}
-
 	
 }
 
-/*
- * Writes bodies to csv file. Requires constant timestep.
- */
 void NBodySolver::writeBodies(const char * filename){
 	//iterate over bodies and write to file
 	
@@ -136,9 +132,6 @@ void NBodySolver::writeBodies(const char * filename){
 	
 }
 
-/*
- * Writes each body to cout. For developement purposes.
- */
 void NBodySolver::writeBodies(){
 	for (Body b: bodies){
 		b.print();

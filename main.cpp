@@ -55,8 +55,6 @@ mat gravity(mat states, vec masses)
 	return rhs;
 }
 
-
-
 int main(int argc, char **argv)
 {
 	

@@ -12,12 +12,19 @@ Body::Body(double mass, vec init_state)
 
 Body::Body()
 {
-		
+	
 }
 
 Body::~Body()
 {
 	
+}
+
+void Body::addState(vec state){
+	
+	trajectory.insert_cols(n, state.rows(0,2));
+	n += 1;
+	this->state = state;
 }
 
 void Body::print()
@@ -33,12 +40,4 @@ void Body::printTrajectory()
 	for (int i=0; i<n; i++) {
 		cout << trajectory.col(i).t() << endl;
 	}
-}
-
-void Body::addState(vec state){
-	
-	trajectory.insert_cols(n, state.rows(0,2));
-	n += 1;
-	this->state = state;
-	
 }
