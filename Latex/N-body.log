@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.10.2)  16 OCT 2014 09:53
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.10.2)  16 OCT 2014 10:57
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -305,13 +305,18 @@ Overfull \vbox (100.52077pt too high) has occurred while \output is active []
 
 
 [2] [3]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 94.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 96.
  (/usr/local/texlive/2013/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 94.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 96.
  [4]
+Overfull \hbox (60.16968pt too wide) in paragraph at lines 109--116
+\OT1/cmr/m/n/10.95 http://www.artcompsci.org/ http://www.ifa.hawaii.edu/faculty
+/barnes/treecode/treeguide.html 
+ []
+
 [5] (./N-body.aux) ) 
 Here is how much of TeX's memory you used:
  3344 strings out of 493315
@@ -328,7 +333,7 @@ s/cm/cmr12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmr17.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmti10.pfb>
-Output written on N-body.pdf (5 pages, 83109 bytes).
+Output written on N-body.pdf (5 pages, 83490 bytes).
 PDF statistics:
  44 PDF objects out of 1000 (max. 8388607)
  30 compressed objects within 1 object stream

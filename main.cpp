@@ -1,4 +1,4 @@
-//#include"NBody_functions.h"
+#include"NBody_functions.h"
 #include"NBodySolver.h"
 #include<cmath>
 
@@ -12,7 +12,6 @@ using arma::vec;
 using arma::mat;
 using arma::norm;
 using arma::zeros;
-
 
 mat gravity(mat states, vec masses)
 {
@@ -31,7 +30,7 @@ mat gravity(mat states, vec masses)
 	mat ax = zeros(3, n_bodies);
 	
 	pos += states.submat(0, 0, 2, n_bodies-1);
-
+	
 	
 	vec r_ij = zeros(3);
 	vec a = zeros(3);
@@ -51,24 +50,25 @@ mat gravity(mat states, vec masses)
 	}
 	
 	rhs.submat(3, 0, 5, n_bodies-1) = ax;
-
+	
 	return rhs;
 }
 
+
 int main(int argc, char **argv)
 {
-	
+	hei();
 	// some particular test-case:
-	int T = 100;
-	double dt = 0.01;
-	mat (*gr)(mat, vec) = gravity;
-	int N = 18;
-
-	
-	NBodySolver solver = NBodySolver(N, gr, T, dt);
-	solver.setInitialConditions("./initial_conditions/solarsystem18.csv");
-	solver.solve();
-	solver.writeBodies("./trajectories/solarsystem18_trajectories.dat");
+//	int T = 100;
+//	double dt = 0.01;
+//	mat (*gr)(mat, vec) = gravity;
+//	int N = 18;
+//
+//	
+//	NBodySolver solver = NBodySolver(N, gr, T, dt);
+//	solver.setInitialConditions("./initial_conditions/solarsystem18.csv");
+//	solver.solve();
+//	solver.writeBodies("./trajectories/solarsystem18_trajectories.dat");
 	
 	
 }

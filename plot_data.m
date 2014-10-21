@@ -4,7 +4,7 @@ N = 18;
 n = size(data, 2);
 AX = 30;
 dt = 0.05;
-bodyimg = imread('redbody.png');
+bodyimg = imread('figures/redbody.png');
 
 %% calcs
 hold on
