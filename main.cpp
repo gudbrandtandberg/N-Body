@@ -18,7 +18,7 @@ mat gravity(mat states, vec masses)
 {
 	// use direct summation to calculate force on each body
 	
-	double G = 1.0;
+	double G = 1;
 	int n_bodies = states.n_cols;
 	
 	mat rhs = zeros(6, n_bodies);
@@ -55,37 +55,37 @@ mat gravity(mat states, vec masses)
 	return rhs;
 }
 
-vec gravity(mat states, vec masses, int body)
-{
-	// use direct summation to calculate force on body #i.
-	
-	double G = 1.0;
-	int n_bodies = states.n_cols;
-	
-	vec rhs = zeros(6);
-	
-	// copy velocities
-	rhs.rows(0, 2) += states.col(body).rows(3, 5);
-	
-	// then determine acceleration
-	mat pos = zeros(3, n_bodies);
-	pos += states.submat(0, 0, 2, n_bodies-1);
-	
-	vec r_ij = zeros(3);
-	vec a = zeros(3);
-
-	for (int j=0; j<n_bodies; j++) { //add contribution from all j != i
-		if (j != body) {
-				
-			r_ij = pos.col(j)-pos.col(body);
-			a += (G*masses(j)/pow(norm(r_ij), 3))*r_ij;
-				
-		}
-	}
-	
-	rhs.rows(3, 5) += a;
-	return rhs;
-}
+//vec gravity(mat states, vec masses, int body)
+//{
+//	// use direct summation to calculate force on body #i.
+//	
+//	double G = 1.0;
+//	int n_bodies = states.n_cols;
+//	
+//	vec rhs = zeros(6);
+//	
+//	// copy velocities
+//	rhs.rows(0, 2) += states.col(body).rows(3, 5);
+//	
+//	// then determine acceleration
+//	mat pos = zeros(3, n_bodies);
+//	pos += states.submat(0, 0, 2, n_bodies-1);
+//	
+//	vec r_ij = zeros(3);
+//	vec a = zeros(3);
+//
+//	for (int j=0; j<n_bodies; j++) { //add contribution from all j != i
+//		if (j != body) {
+//				
+//			r_ij = pos.col(j)-pos.col(body);
+//			a += (G*masses(j)/pow(norm(r_ij), 3))*r_ij;
+//				
+//		}
+//	}
+//	
+//	rhs.rows(3, 5) += a;
+//	return rhs;
+//}
 
 
 
@@ -94,13 +94,20 @@ int main(int argc, char **argv)
 	// some particular test-case:
 	int T = 15;
 	double dt = 0.01;
-	vec (*gr)(mat, vec, int) = gravity;
-	int N = 3;
+	mat (*gr)(mat, vec) = gravity;
+	int N = 11;
 	
 	NBodySolver solver = NBodySolver(N, gr, T, dt);
-	solver.setInitialConditions("./initial_conditions/3body.csv");
+	solver.setInitialConditions("./initial_conditions/solarsystem11.csv");
 	solver.solve();
-	solver.writeBodies("./trajectories/3body_trajectories.dat");
+	solver.writeBodies("./trajectories/solarsystem11_trajectories.dat");
+	
+	
+	
+	
+//	solver.setInitialConditions("./initial_conditions/3body.csv");
+//	solver.solve();
+//	solver.writeBodies("./trajectories/3body_trajectories.dat");
 
 //	
 //	vec init = ones(6);

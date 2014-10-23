@@ -1,6 +1,6 @@
 %% Load data
-data = load('./trajectories/solarsystem18_trajectories.dat');
-N = 18;
+data = load('./trajectories/solarsystem11_trajectories.dat');
+N = 11;
 n = size(data, 2);
 AX = 30;
 dt = 0.05;
@@ -9,7 +9,7 @@ bodyimg = imread('figures/redbody.png');
 %% calcs
 hold on
 for i = 1:N
-    if i == 11
+    if i == 3
         plot(data(3*i-2,:), data(3*i-1,:), 'k');
     else
         plot(data(3*i-2,:), data(3*i-1,:));

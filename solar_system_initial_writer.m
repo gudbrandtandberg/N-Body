@@ -3,7 +3,7 @@ AU = 1.495978707E11;
 w = 60*60*24*7;
 G = 6.67E-11;
 m_s = AU^3/(G*w^2);
-N = 18;
+N = 11;
 
 m = 1/m_s*[1.9891E30 ... %sun
     3.302E23 4.8685E24 5.97219E24 6.4185E23 1.8986E27 5.6846E26...
@@ -67,9 +67,9 @@ bodies(i, 4:6) = v_0(3*i-2:3*i);
 
 end
 
-bodies = [m' bodies];
+bodies = [m(1:N)' bodies];
 
-dlmwrite('./initial_conditions/solarsystem18.csv', bodies);
+dlmwrite('./initial_conditions/solarsystem11.csv', bodies);
     
     
     

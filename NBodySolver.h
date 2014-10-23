@@ -29,9 +29,9 @@ class NBodySolver
 		double T;				// Final time
 		double dt;				// constant timestep
 		
-		vec (*rhs)(mat states, vec masses, int body); // callable object representing the rhs.
+		mat (*rhs)(mat states, vec masses); // callable object representing the rhs.
 
-	
+		int n_timesteps;
 		mat states;
 		vec masses;
 		vec timesteps;
@@ -45,7 +45,7 @@ class NBodySolver
 		 * Constructor. Initializes the numerical paramaters
 		 */
 		
-		NBodySolver(int N, vec (*rhs)(mat states, vec masses, int body), double T, double dt);
+		NBodySolver(int N, mat (*rhs)(mat states, vec masses), double T, double dt);
 		
 		/*
 		* Destructor. Destroy the system

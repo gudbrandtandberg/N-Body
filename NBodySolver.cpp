@@ -1,6 +1,6 @@
 #include"NBodySolver.h"
 
-NBodySolver::NBodySolver(int N, vec (*rhs)(mat states, vec masses, int body), double T, double dt){
+NBodySolver::NBodySolver(int N, mat (*rhs)(mat states, vec masses), double T, double dt){
 		
 	this->T = T;
 	this->N = N;
@@ -13,9 +13,10 @@ NBodySolver::NBodySolver(int N, vec (*rhs)(mat states, vec masses, int body), do
 	states = zeros(6, N);
 	this->masses = zeros(N);
 	
-	timesteps = zeros(10);
+	n_timesteps = 10;
+	timesteps = zeros(n_timesteps);
 	timesteps(0) = dt;
-	for (int i=1; i<10; i++) {
+	for (int i=1; i<n_timesteps; i++) {
 		timesteps(i) = timesteps(i-1)*2;
 	}
 }
@@ -72,6 +73,8 @@ void NBodySolver::solve(){
 		global_t += dt;
 
 	}
+	cout << timesteps << endl;
+	
 }
 
 void NBodySolver::recomputeForces()
@@ -79,16 +82,13 @@ void NBodySolver::recomputeForces()
 
 	for (int i=0; i<N; i++) {
 		
-		//cout << "nextevaltime: " << bodies[i].nextEvalTime << endl;
-		//cout << "global time: " << global_t << endl;
-		
 		if ((bodies[i].nextEvalTime - global_t) < 1.E-8) {
-			//cout << "Beregner kraft" << endl;
-			bodies[i].force = rk4(i, bodies[i].dt);
+			
+			bodies[i].force = rk4(i, bodies[i].dt);;
 			
 		}
 		else {
-			//cout << "hopper videre" << endl;
+			//cout << "hopper over " << endl;
 			continue;
 		}
 	
@@ -101,7 +101,7 @@ void NBodySolver::advance(){
 	for (int i=0; i<N; i++) {
 		nextState = bodies[i].state + dt*bodies[i].force;
 		bodies[i].addState(nextState);
-		
+		states.col(i) = nextState;
 	}
 }
 
@@ -109,8 +109,9 @@ void NBodySolver::recomputeTimesteps()
 {
 	for (int i=0; i<N; i++) {
 		if ((bodies[i].nextEvalTime - global_t) < 1.E-8) {
-			bodies[i].dt = roundBestTimestep(1./norm(bodies[i].force));
-			//cout << "best: " << 1./norm(bodies[i].force) << endl;
+			
+			bodies[i].dt = roundBestTimestep(0.01/norm(bodies[i].force.cols(3, 5)));
+			//cout << "best: " << 0.01/norm(bodies[i].force) << "rounded: " << roundBestTimestep(0.1/norm(bodies[i].force)) << endl;
 			bodies[i].setNextEvalTime(global_t + bodies[i].dt);
 		}
 	}
@@ -119,26 +120,15 @@ void NBodySolver::recomputeTimesteps()
 
 vec NBodySolver::rk4(int i, double dt)
 {
-	double dt2 = dt/2;
-
-	mat tmp = states;
 	
-	vec K1 = rhs(states, masses, i);
+	mat K1 = rhs(states, masses);
+	mat K2 = rhs(states + 0.5*dt*K1, masses);
+	mat K3 = rhs(states + 0.5*dt*K2, masses);
+	mat K4 = rhs(states + dt*K3, masses);
 	
-	tmp.col(i) += dt2*K1;
-	vec K2 = rhs(tmp, masses, i);
+	mat forces = 1/6.0*(K1 + 2*K2 + 2*K3 + K4);
 	
-	tmp = states;
-	tmp.col(i) += dt2*K2;
-	vec K3 = rhs(tmp, masses, i);
-	
-	tmp = states;
-	tmp.col(i) += dt*K3;
-	vec K4 = rhs(tmp, masses, i);
-
-	vec force = 1./6*(K1 + 2*K2 + 2*K3 + K4);
-
-	return force;
+	return forces.col(i);
 }
 
 double NBodySolver::roundBestTimestep(double dt)
@@ -148,7 +138,7 @@ double NBodySolver::roundBestTimestep(double dt)
 	double smallest = abs(dt-timesteps(0));
 	int smallestInd = 0;
 	
-	for (int i=1; i<10; i++) {
+	for (int i=1; i<n_timesteps; i++) {
 		
 		cmp = abs(timesteps(i)-dt);
 		
