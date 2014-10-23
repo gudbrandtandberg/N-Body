@@ -20,13 +20,17 @@ using arma::zeros;
 class Body
 {
 	private:
-		int n;
-		vec t;				 // [t0 t1 t2 ... tn]
+	
 		double mass;
 		
 	public:
-		mat trajectory;      // [[x1 y1 z1] [x2 y2 z2] [x3 y3 z3] ... [xt yt zt]]
+	
+		int n;
+		mat state_history;   // [[x1 y1 z1 vx1 vx2 vx3] ... [xt yt zt vxt vyt vzt]]
 		vec state;			 // [xt yt zt vxt vyt vzt]
+		vec force;
+		double dt;
+		double nextEvalTime;
 	
 		/*
 		 * Constructor. Sets initial state and empty trajectory
@@ -53,6 +57,7 @@ class Body
 	
 		void print();
 		void printTrajectory();
+		void setNextEvalTime(double time);
 	
 };
 

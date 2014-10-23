@@ -6,8 +6,10 @@ Body::Body(double mass, vec init_state)
 	n = 1;
 	this->mass = mass;
 	this->state = init_state;
-	trajectory = mat(3, n);
-	trajectory.col(0) = state.rows(0,2);
+	state_history = zeros(6, n);
+	state_history.col(0) = state;
+	nextEvalTime = 0;
+	force = zeros(6);
 }
 
 Body::Body()
@@ -21,10 +23,14 @@ Body::~Body()
 }
 
 void Body::addState(vec state){
-	
-	trajectory.insert_cols(n, state.rows(0,2));
-	n += 1;
+
+	n = state_history.n_cols;
+	state_history.insert_cols(n, state);
 	this->state = state;
+}
+
+void Body::setNextEvalTime(double time){
+	this->nextEvalTime = time;
 }
 
 void Body::print()
@@ -37,7 +43,7 @@ void Body::print()
 
 void Body::printTrajectory()
 {
-	for (int i=0; i<n; i++) {
-		cout << trajectory.col(i).t() << endl;
+	for (int i=0; i<state_history.n_cols; i++) {
+		cout << state_history.col(i).t() << endl;
 	}
 }

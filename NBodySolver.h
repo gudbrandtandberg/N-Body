@@ -8,10 +8,10 @@
 #include<armadillo>
 
 /*
- *      NBodySolver v1.0
- * Uses constant timestep.
+ *      NBodySolver v1.1
+ * Uses block timesteps.
  * Solves the equation f'(r_i) = rhs(r_i)
- * for 0 < t < T with timestep dt.
+ * for 0 < t < T with minimum timestep dt.
  * f is a 6xN system of first order eqns
  */
 
@@ -29,22 +29,23 @@ class NBodySolver
 		double T;				// Final time
 		double dt;				// constant timestep
 		
-		mat (*rhs)(mat states, vec masses); // callable object representing the rhs.
+		vec (*rhs)(mat states, vec masses, int body); // callable object representing the rhs.
 
-		vector<Body> bodies;
-		vector<Body> toStep;
+	
 		mat states;
 		vec masses;
+		vec timesteps;
 
 		
 	public:
-		
+	
+		vector<Body> bodies;
 		
 		/*
 		 * Constructor. Initializes the numerical paramaters
 		 */
 		
-		NBodySolver(int N, mat (*rhs)(mat states, vec masses), double T, double dt);
+		NBodySolver(int N, vec (*rhs)(mat states, vec masses, int body), double T, double dt);
 		
 		/*
 		* Destructor. Destroy the system
@@ -69,14 +70,17 @@ class NBodySolver
 		 * Advance the solutions with Euler's method.
 		 */
 		
-		void advanceEuler(double dt);
+		void advance();
 		
 		/*
 		 * Advance the solutions with RK4 method.
 		 */
 		
-		void advanceRK4(double dt);
-		
+		vec rk4(int i, double dt);
+		void recomputeForces();
+		void recomputeTimesteps();
+		double roundBestTimestep(double dt);
+	
 		/*
 		 * Iterate over the bodies and write them to .csv-file
 		 */
