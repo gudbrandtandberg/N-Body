@@ -15,10 +15,21 @@ Part 1 - Solar System++ (18 Bodies):
 13	Deimos
 14	Io
 15	Europa
-15	Ganymede
-16	Callisto	
+16	Ganymede
+17	Callisto	
 18	Halley's
 
 
+ovito, vmd
 
-Part 2 - Starclusters and beyond (100 - 10^4 bodies):
+TODO:
+
+FIX ADAPTIVE TIMESTEPS!!!
+
+MAKE OPENGL MODEL OF SOLARSYSTEM
+SOME OPEN CLUSTER THEORY
+CALCULATE THE ENERGY
+RUN OPEN CLUSTER SIMULATIONS (use matlab)
+SMOOTHING
+MAKE OPENGL MODEL OF STARCLUSTER
+

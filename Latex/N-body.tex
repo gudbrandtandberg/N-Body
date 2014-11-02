@@ -7,7 +7,7 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage[latin1]{inputenc}
-\usepackage[norsk]{babel}
+
 
 %\newcommand*{\R}{\mathbb{R}}
 %\newcommand*{\abs}[1]{{\lvert#1\rvert}}
@@ -35,26 +35,30 @@
 \section{The first NBodySolver class}
 
 \section{Introduction to the numerical methods}
-\subsection{Euler's Method}
 \subsection{Runge Kutta 4}
 \subsection{Verlet method}
 
-\section{Results for the extended solar system}
+\section{Results for the solar system}
+\subsection{Three Body Problem}
+OpenGL graphics of SEM-system. 
+\subsubsection{Stability and accuracy}
+\subsubsection{Energy considerations}
 
 \section{Extending NBodySolver to allow for different timesteps}
 
 \section{Refined results for the extended solar system}
+Discussion on the efficiency of this the solver. 
+OpenGL graphics of inner Solar System (sun,...,callisto).
 
 \section{Further development of the algorithm}
 \subsection{Parallellizing the code}
+\subsection{Smoothing factor}
 \subsection{Faster gravity evaluations}
-\subsection{Close encounter regularization}
 
-\section{Starclusters and beyond...}
-\subsection{The initial configurations}
+\section{Application: cold cluster collapse}
+\subsection{Introduction}
 \subsection{Results}
-
-\section{Graphics}
+OpenGL animation, discussion on $t_{\mathrm{crunch}}$, virial energy computation, different smoothing \&c. 
 
 \section{Conclusion}
 
@@ -83,12 +87,20 @@ Added Phobos \& Deimos. Phobos requires at most hourly timestep! This calls for 
 \emph{15.10.2014}
 Regroup at the lab and start to think about the next steps. The next steps will be: 1) clean up \& comment the code 2) Start writing individual timestep implementation in new branch 3) Test the project again. [After that: parallellization]. 
 
-Finished cleaning up and commenting. Pushed the project. Read several papers on methods of N-Body simulations, and the physics behind. Need to visit the think-tank for some time now.  
+Finished cleaning up and commenting. Pushed the project. Read several papers on methods of N-Body simulations, and the physics behind. Need to visit the think-tank for some time now. 
+
+\emph{23.10.2014}
+Restructured the project this week. Extremely frustrating problem held me back some days. It is now taken care of. Wrote a first implementation of adaptive stepsize today at the lab. Will have to restructure the program again to allow Richardson method. 
+
+\emph{31.10.2014}
+Haven't written log for some days, oops. The I/O structure of the program has been rewritten to allow more flexibility. The solver works fine with both Verlet and RK4 for single timestep, but does not work with adaptive. Extremely frustrating. Ready to move on, but held back. Reconsidered the flow of the paper, decided which configurations to focus on. Found a openGL project on the internet to base my animations on. Considering 
+
 
 %====================TODO====================================
 \newpage
 
 \section{TODO}
+
 
 Write python script that generates the following initial conditions (and more!)
 \begin{itemize}

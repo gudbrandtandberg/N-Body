@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.10.2)  16 OCT 2014 10:57
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.10.2)  31 OCT 2014 12:28
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -163,20 +163,7 @@ Package: inputenc 2008/03/30 v1.1d Input encoding file
 (/usr/local/texlive/2013/texmf-dist/tex/latex/base/latin1.def
 File: latin1.def 2008/03/30 v1.1d Input encoding file
 ))
-(/usr/local/texlive/2013/texmf-dist/tex/generic/babel/babel.sty
-Package: babel 2013/05/16 v3.9f The Babel package
-
-(/usr/local/texlive/2013/texmf-dist/tex/generic/babel-norsk/norsk.ldf
-Language: norsk 2012/08/06 v2.0i Norsk support from the babel system
-
-(/usr/local/texlive/2013/texmf-dist/tex/generic/babel/babel.def
-File: babel.def 2013/05/16 v3.9f Babel common definitions
-\babel@savecnt=\count103
-\U@D=\dimen122
-)
-Package babel Info: Making " an active character on input line 113.
-))
-(./N-body.aux)
+No file N-body.aux.
 \openout1 = `N-body.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 22.
@@ -191,7 +178,6 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 22.
 LaTeX Font Info:    ... okay on input line 22.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 22.
 LaTeX Font Info:    ... okay on input line 22.
-
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -228,16 +214,16 @@ LaTeX Font Info:    ... okay on input line 22.
 
 (/usr/local/texlive/2013/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count104
-\scratchdimen=\dimen123
+\scratchcounter=\count103
+\scratchdimen=\dimen122
 \scratchbox=\box28
-\nofMPsegments=\count105
-\nofMParguments=\count106
+\nofMPsegments=\count104
+\nofMParguments=\count105
 \everyMPshowfont=\toks24
-\MPscratchCnt=\count107
-\MPscratchDim=\dimen124
-\MPnumerator=\count108
-\makeMPintoPDFobject=\count109
+\MPscratchCnt=\count106
+\MPscratchDim=\dimen123
+\MPnumerator=\count107
+\makeMPintoPDFobject=\count108
 \everyMPtoPDFconversion=\toks25
 ) (/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
@@ -295,48 +281,49 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (9.01659pt too wide) in paragraph at lines 44--44
-[]\OT1/cmr/bx/n/14.4 Extending NBo-dy-Sol-ver to al-low for dif-fe-rent ti-mest
-eps 
+Overfull \hbox (9.01659pt too wide) in paragraph at lines 47--47
+[]\OT1/cmr/bx/n/14.4 Extending NBody-Solver to al-low for dif-fer-ent timesteps
+ 
  []
 
+[2] [3] [4]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 106.
 
-Overfull \vbox (100.52077pt too high) has occurred while \output is active []
-
-
-[2] [3]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 96.
  (/usr/local/texlive/2013/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 96.
- [4]
-Overfull \hbox (60.16968pt too wide) in paragraph at lines 109--116
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 106.
+
+[5]
+Overfull \hbox (30.16968pt too wide) in paragraph at lines 119--127
 \OT1/cmr/m/n/10.95 http://www.artcompsci.org/ http://www.ifa.hawaii.edu/faculty
 /barnes/treecode/treeguide.html 
  []
 
-[5] (./N-body.aux) ) 
+[6] (./N-body.aux) ) 
 Here is how much of TeX's memory you used:
- 3344 strings out of 493315
- 45082 string characters out of 6137904
- 115130 words of memory out of 5000000
- 6738 multiletter control sequences out of 15000+600000
- 10399 words of font info for 39 fonts, out of 8000000 for 9000
+ 2921 strings out of 493315
+ 39809 string characters out of 6137904
+ 105126 words of memory out of 5000000
+ 6329 multiletter control sequences out of 15000+600000
+ 11698 words of font info for 44 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,6n,26p,396b,195s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,6n,26p,396b,193s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmbx12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmr17.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmti10.pfb>
-Output written on N-body.pdf (5 pages, 83490 bytes).
+onts/cm/cmbx10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmbx12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmmi10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmr12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr17.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmti1
+0.pfb>
+Output written on N-body.pdf (6 pages, 112630 bytes).
 PDF statistics:
- 44 PDF objects out of 1000 (max. 8388607)
- 30 compressed objects within 1 object stream
+ 59 PDF objects out of 1000 (max. 8388607)
+ 41 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

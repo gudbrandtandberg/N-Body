@@ -1,9 +1,10 @@
+%% Solar system
 
 AU = 1.495978707E11;
 w = 60*60*24*7;
 G = 6.67E-11;
 m_s = AU^3/(G*w^2);
-N = 11;
+N = 18;
 
 m = 1/m_s*[1.9891E30 ... %sun
     3.302E23 4.8685E24 5.97219E24 6.4185E23 1.8986E27 5.6846E26...
@@ -69,9 +70,49 @@ end
 
 bodies = [m(1:N)' bodies];
 
-dlmwrite('./initial_conditions/solarsystem11.csv', bodies);
+n = 13;
+
+if n == 3
+    I = [1 4 11];
+end
+if n == 13
+   I = [1 2 3 4 5 6 11 12 13 14 15 16 17];
+end
+
+dlmwrite('./initial_conditions/solarsystem13.csv', bodies(I,:));
     
+%% Open cluster
+
+N = 100;
+R0 = 20;
+
+bodies = zeros(N, 7);
+
+for i = 1:N
+
+    % generate random mass
+    m = normrnd(10, 1);
     
+    x = -R0 + 2*R0*rand();    
+    ylim = sqrt(R0^2 - x^2);
+    y = -ylim + 2*ylim*rand();    
+    zlim = sqrt(R0^2 - y^2 - x^2);
+    z = -zlim + 2*zlim*rand();
+   
+    bodies(i,:) = [m x y z 0 0 0];
+ 
     
+end
+
+dlmwrite('./initial_conditions/cluster100.csv', bodies);
+
+    
+%% Convert between *_trajectory.dat to *_gl.dat file
+
+data = load('./trajectories/solarsystem3_trajectories.dat');
+
+xyz = data([1 2 3 7 8 9 13 14 15], :)';
+
+dlmwrite('trajectories/solarsystem3_gl.dat', xyz, 'delimiter', ' ');
                            
                             
