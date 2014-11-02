@@ -1,35 +1,39 @@
-# Standard makefile-mal laget av Gudbrand for C++ programmer i FYS3150
+# Makefile for Gudbrand Tandberg's NBODY Project
+# FYS3150 - Computational Physics fall 2014
 
 CC=g++
-C_FLAGS = -Wall -O3 -g
-
-PROG = main
-OBJS = Body.o NBodySolver.o main.o
-
-#hvis armadillo.h skal brukes:
-LIB_FLAGS = -larmadillo -framework Accelerate
+C_FLAGS = -Wall -O3
 
 
-#regel for executables:
-$(PROG): $(OBJS)
-	$(CC) $(C_FLAGS) -o $@ $(OBJS) $(LIB_FLAGS)
+SRCDIR = source
+OBJDIR = objects
+
+#SOURCES := $(wildcard $(SRCDIR)/*.cpp)
+#INCLUDES := $(wildcard $(SRCDIR)/*.h)
+#OBJS := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+
+MAIN_OBS = objects/main.o objects/Body.o objects/NBodySolver.o
+GL_OBS = imageloader.o openGL_solarsystem3.o
 
 
-openGL_solarsystem3: openGL_solarsystem3.cpp
-	$(CC) $^ -o $@ -framework GLUT -framework OpenGL
+#link armadillo:
+ARMA_FLAGS = -larmadillo -framework Accelerate
 
-#regel for objekter
-Body.o: Body.cpp
-	$(CC) $(C_FLAGS) -c Body.cpp
+#link GLUT and OpenGL:
+GL_FLAGS = -framework GLUT -framework OpenGL
 
-NBodySolver.o: NBodySolver.cpp
-	$(CC) -c $^
 
-main.o: main.cpp
-	$(CC) -c $^
+## rules for executables:
 
-openGL_solarsystem3.o: openGL_solarsystem3.cpp
-	$(CC) -c $^
+main: objects/main.o objects/Body.o objects/NBodySolver.o
+	$(CC) $(C_FLAGS) -o $@ $^ $(ARMA_FLAGS)
+
+openGL_3: objects/imageloader.o objects/openGL_solarsystem3.o
+	$(CC) $^ -o $@ $(GL_FLAGS)
+
+## rules for objects:
+$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	$(CC) -c $< -o $@
 
 clean:
-	rm -f ${PROG} *.o
+	rm -f main openGL_3 objects/*
