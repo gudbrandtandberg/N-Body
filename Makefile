@@ -2,7 +2,7 @@
 # FYS3150 - Computational Physics fall 2014
 
 CC=g++
-C_FLAGS = -Wall -O3
+C_FLAGS = -O3 -Wno-deprecated
 
 
 SRCDIR = source

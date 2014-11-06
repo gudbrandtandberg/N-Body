@@ -4,7 +4,6 @@
  * Part of Gravitational N-Body Simulations by Gudbrand Tandberg
  * FYS3150 fall 2014
  *
- *
  */
 
 #include "Body.h"

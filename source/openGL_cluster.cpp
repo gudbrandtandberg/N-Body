@@ -44,13 +44,8 @@ vector<vector<float> > coordinates = vector<vector<float> >(N);
 static GLfloat camPos[3]={0,0,40};
 static GLfloat lookAt[3]={0,0,0};
 
-// texture for each body
-GLuint _sunTexture;
-
-// to draw a textured sphere
+// to draw a texture on
 GLUquadric *quad;
-
-
 
 /*
  * glutKeyboardFunc is called below to set this function to handle
@@ -126,13 +121,6 @@ static void SpecialKeyFunc(int Key, int x, int y)
 static void drawSphere(int planet)
 {
 	float radius = 0.2;
-	//GLuint texture = _sunTexture;
-	
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, texture);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//gluQuadricTexture(quad, 1);
 	gluSphere(quad, radius, 20, 20);
 }
 
@@ -164,12 +152,15 @@ static void Animate(void)
 	// Clear the current matrix (Modelview)
     glLoadIdentity();
 	
+	glMatrixMode(GL_PROJECTION);
+	gluPerspective(60.0, (GLfloat) 1080./720, 0.1, 200);
+	
 	//set the camera position
 	gluLookAt(camPos[0],camPos[1],camPos[2],
 			  lookAt[0], lookAt[1], lookAt[2],
 			  0, 1, 0);
 
-	// Draw the planets
+	// Draw the bodies
 	for (int i=0; i<N; i++){
 		
 		x = coordinates[i][0];
@@ -206,12 +197,12 @@ static void ResizeWindow(int w, int h)
 	aspectRatio = (float)w/(float)h;
 
 	// Set up the projection view matrix (not very well!)
-    glMatrixMode( GL_PROJECTION );
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective( 60.0, aspectRatio, 1.0, 30.0 );
 
 	// Select the Modelview matrix
-    glMatrixMode( GL_MODELVIEW );
+    glMatrixMode(GL_MODELVIEW);
 }
 
 // Load texture
@@ -235,6 +226,7 @@ GLuint loadTexture(Image* image) {
 // Initialize OpenGL's rendering modes and load planet textures
 void OpenGLInit(void)
 {
+	
 	glShadeModel( GL_FLAT );
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
 	glClearDepth( 1.0 );
@@ -266,13 +258,6 @@ void OpenGLInit(void)
 	}
 	
 	quad = gluNewQuadric();
-
-	//Load images & apply textures.
-	
-	Image* image = loadBMP("/Users/gudbrand/Documents/NBODY/images/sun.bmp");
-	_sunTexture = loadTexture(image);
-	
-	delete image;
 	
 }
 
@@ -293,6 +278,8 @@ void OpenGLInit(void)
 
 	// Initialize OpenGL.
     OpenGLInit();
+	
+	
 
 	// Set up callback functions for key presses
 	glutKeyboardFunc(KeyPressFunc);

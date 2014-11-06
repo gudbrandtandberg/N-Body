@@ -34,6 +34,7 @@ class NBodySolver
 		double global_t;
 		double T;
 		double G;
+		double eps;
 		double dtmax;
 		double dtmin;
 		bool adaptive;

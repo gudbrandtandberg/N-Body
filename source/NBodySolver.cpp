@@ -3,8 +3,6 @@
  *
  * Part of Gravitational N-Body Simulations by Gudbrand Tandberg
  * FYS3150 fall 2014
- *
- *
  */
 
 #include"NBodySolver.h"
@@ -18,8 +16,14 @@ NBodySolver::NBodySolver(int N, double T, double dtmax, bool adaptive){
 	
 	global_t = 0.0;
 	
-	//G = 1.0;
-	G = 2*4*pow(M_PI, 2)/(32*N*10);
+	if (N >= 100){
+		G = pow(M_PI, 2)/(2*N*10);
+		eps = 10E-2;
+	}
+	else {
+		G = 1.0;
+		eps = 10E-5;
+	}
 	
 	toStep = set<int>();
 	bodies = vector<Body>();
@@ -187,7 +191,6 @@ void NBodySolver::Verlet()
 mat NBodySolver::gravity(mat states)
 {
 	// use direct summation to calculate force on each body in toStep
-	double eps = 10E-2;
 	mat rhs = zeros(6, N);
 	
 	mat pos = zeros(3, N);

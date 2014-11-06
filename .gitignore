@@ -1,5 +1,4 @@
 Latex/*.log
 Latex/*.aux
 Latex/*.synctex.gz
-*.o
-main
+objects/*.o

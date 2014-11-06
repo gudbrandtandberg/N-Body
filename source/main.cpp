@@ -11,7 +11,6 @@
  */
 
 #include"NBodySolver.h"
-#include<cmath>
 
 int main(int argc, char **argv)
 {
@@ -59,7 +58,7 @@ int main(int argc, char **argv)
 			T = 10;
 			dtmax = 1;
 			adaptive = false;
-			infile = "./initial_conditions/solarsystem3.csv";
+			infile = "./initial_conditions/solarsystem3.dat";
 			break;
 			
 		default:

@@ -4,8 +4,10 @@
  * Part of Gravitational N-body simulation project by Gudbrand Tandberg
  * FYS3150 fall 2014
  *
- * Third party program originally written by Bill Jacobs at videotutorialsrock.com
- * that loads a bitmap image into a Image object.
+ * Third party program originally written by Bill Jacobs at 
+ * http://www.videotutorialsrock.com/opengl_tutorial/reference.php#lighting
+ *
+ * Loads a bitmap image into a Image object.
  */
 
 #ifndef IMAGE_LOADER_H_INCLUDED

@@ -1,11 +1,39 @@
-%% Solar system
+%% Part 1 - Solar System (18 Bodies)
+% Use positions, masses and velocities of all the planets in the solar
+% system to write intial files. Has been written to write n = 3, 6, 13 18
+% bodies to file. All the bodies are:
+% 
+% 1       Sun
+% 2       Mercury
+% 3       Venus
+% 4       Earth
+% 5       Mars
+% 6       Jupiter
+% 7       Saturn
+% 8       Neptune
+% 9       Uranus
+% 10      Pluto
+% 11      Moon
+% 12      Phobos
+% 13      Deimos
+% 14      Io
+% 15      Europa
+% 16      Ganymede
+% 17      Callisto
+% 18      Halley's comet
 
-AU = 1.495978707E11;
-w = 60*60*24*7;
-G = 6.67E-11;
-m_s = AU^3/(G*w^2);
-N = 18;
+% Unit scaling. We use astronomical units, weeks and set G = 1 in the
+% siulations. This determines the characteristic mass; m_s. 
+AU = 1.495978707E11;   % astronomical units
+w = 60*60*24*7;        % weeks
+G = 6.67E-11;          % Gravitational constant
+m_s = AU^3/(G*w^2);    % characteristic mass
 
+% File-writing options
+N = 18;                % # of bodies in total
+n = 13;                % # of bodies to write to file
+
+% Masses of the 18 bodies in units of m_s 
 m = 1/m_s*[1.9891E30 ... %sun
     3.302E23 4.8685E24 5.97219E24 6.4185E23 1.8986E27 5.6846E26...
     8.681E25 1.0243E26 1.3E22...%pluto
@@ -19,6 +47,7 @@ m = 1/m_s*[1.9891E30 ... %sun
     2.2E14 %Halley
     ];
 
+% Initial positions in astronomical units
 r_0 = 1000/AU*[0, 0, 0 ...                                              %sun
 4.325741590616594E+07, -4.447598205227128E+07, -7.602793726150981E+06...%mercury
 -1.065184862973610E+08,  1.426409267960166E+07,  6.342590226882618E+06...
@@ -39,6 +68,7 @@ r_0 = 1000/AU*[0, 0, 0 ...                                              %sun
 -3.061126454498667E+09,  3.760634554053051E+09, -1.461631754870368E+09...%Halley
 ];
 
+% Initial velocities in AU/week
 v_0 = 1000*w/AU*[0, 0, 0 ...                                            %sun
 2.525822913860079E+01,  3.627931518613809E+01,  6.469242537532837E-01...%mercury
 -4.838066659924075E+00, -3.486533967772683E+01, -1.986418837879511E-01...
@@ -68,37 +98,44 @@ bodies(i, 4:6) = v_0(3*i-2:3*i);
 
 end
 
+% bodies now contains ALL the information above. 
+% the index vector I chooses which to write to file.
+
 bodies = [m(1:N)' bodies];
 
-n = 18;
-
-if n == 3
+if n == 3  % sun - earth - moon
     I = [1 4 11];
 end
-if n == 6
+if n == 6  % sun - merc - venus - earth - mars - jupiter
     I = [1 2 3 4 5 6];
 end
-if n == 13
+if n == 13 % sun -> jupiter - moon - phobos - Galilleian moons
    I = [1 2 3 4 5 6 11 12 13 14 15 16 17];
 end
-if n == 18
+if n == 18 % all bodies
     I = 1:18;
 end
 
-dlmwrite('../initial_conditions/solarsystem18.dat', bodies(I,:), 'delimiter', ' ');
+dlmwrite(sprintf('../initial_conditions/solarsystem%d.dat', n),...
+    bodies(I,:), 'delimiter', ' ');
     
-%% Open cluster
+%% Part 2 - Open cluster
+% Generate N random intial conditions for simulating cold collapse of a
+% galaxy.
 
-N = 100;
-R0 = 20;
+N = 100;    % number of 'bodies' in simulation
+R0 = 20;    % pre-collapse radius in AU
 
 bodies = zeros(N, 7);
 
+% Fill bodies with random masses and positions and zero velocities
+
 for i = 1:N
 
-    % generate random mass
+    % Normal distributed masses (use solar masses as characteristic mass)
     m = normrnd(10, 1);
     
+    % Uniformly distributed positions in sphere
     x = -R0 + 2*R0*rand();    
     ylim = sqrt(R0^2 - x^2);
     y = -ylim + 2*ylim*rand();    
@@ -106,10 +143,10 @@ for i = 1:N
     z = -zlim + 2*zlim*rand();
    
     bodies(i,:) = [m x y z 0 0 0];
- 
     
 end
 
-dlmwrite('../initial_conditions/cluster100.dat', bodies, 'delimiter', ' ');
+dlmwrite(sprintf('../initial_conditions/cluster%d.dat', N), bodies, ...
+    'delimiter', ' ');
 
                             
