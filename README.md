@@ -16,6 +16,7 @@ Bitmap images of all planets, and a simple dot image used in matlab plotting.
 
 ### initial_conditions
 Files containing initial conditions for various configurations. Uses format
+
 mass x y z vx vy vz
 ...
 
@@ -24,6 +25,7 @@ Matlab programs that analyze the data provided by main
 
 ### output
 Folder containing all output from main. Mainly trajectories and energies. Trajectory format
+
 x1 y1 z1 x2 y2 z2 ... xN yN zN
 ...
 
