@@ -8,13 +8,8 @@ C_FLAGS = -Wall -O3
 SRCDIR = source
 OBJDIR = objects
 
-#SOURCES := $(wildcard $(SRCDIR)/*.cpp)
-#INCLUDES := $(wildcard $(SRCDIR)/*.h)
-#OBJS := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-
 MAIN_OBS = objects/main.o objects/Body.o objects/NBodySolver.o
-GL_OBS = imageloader.o openGL_solarsystem3.o
-
+GL_OBS = imageloader.o openGL_solarsystem.o
 
 #link armadillo:
 ARMA_FLAGS = -larmadillo -framework Accelerate
@@ -22,16 +17,19 @@ ARMA_FLAGS = -larmadillo -framework Accelerate
 #link GLUT and OpenGL:
 GL_FLAGS = -framework GLUT -framework OpenGL
 
-
 ## rules for executables:
 
 main: objects/main.o objects/Body.o objects/NBodySolver.o
 	$(CC) $(C_FLAGS) -o $@ $^ $(ARMA_FLAGS)
 
-openGL_3: objects/imageloader.o objects/openGL_solarsystem3.o
+solar_animation: objects/imageloader.o objects/openGL_solarsystem.o
+	$(CC) $^ -o $@ $(GL_FLAGS)
+
+cluster_animation: objects/imageloader.o objects/openGL_cluster.o
 	$(CC) $^ -o $@ $(GL_FLAGS)
 
 ## rules for objects:
+
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) -c $< -o $@
 
