@@ -18,6 +18,10 @@ int N = 6;
 ifstream infile("/Users/gudbrand/Documents/NBODY/output/6_body_trajectories_200_0.1_0.dat");
 
 // temporary coordinates
+float weekOfYear = 0;
+float lengthOfDay[] = {25./7, 58./7, 243./7, 1./7, 1./7, 0.4/7};
+
+float dt = 0.1;  //weeks
 float x = 0;
 float y = 0;
 float z = 0;
@@ -138,7 +142,9 @@ static void drawSphere(int planet)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gluQuadricTexture(quad, true);
+	glRotatef(-weekOfYear/lengthOfDay[planet], 0, 0, 1);
 	gluSphere(quad, radius, 20, 20);
+	glRotatef(weekOfYear/lengthOfDay[planet], 0, 0, 1);
 }
 
 static void Animate(void)
@@ -151,12 +157,13 @@ static void Animate(void)
 		
 		for (int i=0; i<N; i++) {
 			if (infile >> coordinates[i][0] >> coordinates[i][1] >> coordinates[i][2]) {
-				
 			}
 			else{
 				exit(1);
 			}
+			
 		}
+		weekOfYear += 1;
 	}
 
 	// Clear the current matrix
@@ -166,21 +173,27 @@ static void Animate(void)
 	gluLookAt(camPos[0],camPos[1],camPos[2],
 			  lookAt[0], lookAt[1], lookAt[2],
 			  0, 1, 0);
+	
+	//cout << lookAt[0] << " " << lookAt[1] << " " << lookAt[2] << endl;
 
 	// Draw a quad with stars texture
 	glBindTexture(GL_TEXTURE_2D, _starsTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f(-20.0, 20.0, -25.0);
-	glTexCoord2f(1.0, 1.0); glVertex3f(20.0, 20.0, -25.0);
-	glTexCoord2f(1.0, 0.0); glVertex3f(20.0, -20.0, -25.0);
-	glTexCoord2f(0.0, 0.0); glVertex3f(-20.0, -20.0, -25.0);
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0, 1.0); glVertex3f(-30.0, 20.0, -15.0);
+		glTexCoord2f(0.5, 1.0); glVertex3f(0.0, 20.0, -25.0);
+		glTexCoord2f(1.0, 1.0); glVertex3f(30.0, 20.0, -15.0);
+		glTexCoord2f(1.0, 0.0); glVertex3f(30.0, -20.0, -15.0);
+		glTexCoord2f(0.5, 0.0); glVertex3f(0.0, -20.0, -25.0);
+		glTexCoord2f(0.0, 0.0); glVertex3f(-30.0, -20.0, -15.0);
 	glEnd();
+
 	
 	// Draw the planets
 	for (int i=0; i<N; i++){
+		
 		
 		x = coordinates[i][0];
 		y = coordinates[i][1];
@@ -191,6 +204,7 @@ static void Animate(void)
 		drawSphere(i);
 		glRotatef(-90, 1, 0, 0);
 		glTranslatef(-y, -z, -x);
+		
 	}
 
 	// Flush the pipeline, and swap the buffers
@@ -253,9 +267,9 @@ void OpenGLInit(void)
 	glEnable(GL_TEXTURE_2D);
 
 	// set lighting
-	GLfloat light_ambient[] = {0.6, 0.6, 0.6, 1.0};
+	GLfloat light_ambient[] = {0.7, 0.7, 0.7, 1.0};
 	GLfloat light_diffuse[] = {0.6, 0.6, 0.6, 1.0};
-	GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat light_specular[] = {0.3, 0.3, 0.3, 0.3};
 	GLfloat light_position0[] = {0.0, 0.0, 0.0, 0.0};
 
 	
