@@ -17,11 +17,14 @@ int main(int argc, char **argv)
 	int T, N;
 	double dtmax;
 	bool adaptive = 0;
+	int method = 0;
 	char* infile;
 	
 	// Read options
 	switch (argc){
 	
+		case 6:
+			method = atoi(argv[5]);
 		case 5:
 			adaptive = atoi(argv[4]);
 			
@@ -66,12 +69,13 @@ int main(int argc, char **argv)
 			cout << argv[0] << endl;
 			cout << argv[0] << " N T dtmax" << endl;
 			cout << argv[0] << " N T dtmax adaptive" << endl;
+			cout << argv[0] << " N T dtmax adaptive method" << endl;
 			exit(1);
 	}
 	
 	
 	// Initialize & solve
-	NBodySolver solver = NBodySolver(N, T, dtmax, adaptive);
+	NBodySolver solver = NBodySolver(N, T, dtmax, adaptive, method);
 	solver.setInitialConditions(infile);
 	solver.solve();
 	solver.writeTrajectories();

@@ -37,7 +37,7 @@ using namespace std;
 void OpenGLInit(void);
 
 /*
- * Draws a textured sphere of given radius, at the surrent positions, 
+ * Draws a textured sphere of given radius, at the current position,
  * where int planet tells which texture to use.
  */
 

@@ -7,13 +7,13 @@
 
 #include"NBodySolver.h"
 
-NBodySolver::NBodySolver(int N, double T, double dtmax, bool adaptive){
+NBodySolver::NBodySolver(int N, double T, double dtmax, bool adaptive, int method){
 		
 	this->T = T;
 	this->N = N;
 	this->dtmax = dtmax;
 	this->adaptive = adaptive;
-	
+	this->method = method;
 	global_t = 0.0;
 	
 	if (N >= 100){
@@ -22,16 +22,28 @@ NBodySolver::NBodySolver(int N, double T, double dtmax, bool adaptive){
 	}
 	else {
 		G = 1.0;
-		eps = 10E-5;
+		eps = 0;
 	}
 	
 	toStep = set<int>();
 	bodies = vector<Body>();
 	states = zeros(6, N);
 	masses = zeros(N);
+	pos = zeros(3, N);
+	a_now = zeros(3, N);
+	a_next = zeros(3, N);
+	r_next = zeros(3, N);
+	computedFirst = false;
+	a = zeros(3);
+	r_ij = zeros(3);
+	v_half = zeros(3, N);
+	rhs = zeros(6, N);
+	time_index = 0;
+	current_dt = 0;
+	mainNode_n = 0;
 	
 	if (adaptive){
-		n_timesteps = 8;
+		n_timesteps = 3;
 		timesteps = zeros(n_timesteps);
 		timesteps(0) = dtmax;
 		
@@ -39,6 +51,9 @@ NBodySolver::NBodySolver(int N, double T, double dtmax, bool adaptive){
 			timesteps(i) = timesteps(i-1)/2;
 		}
 		dtmin = timesteps(n_timesteps-1);
+		
+		step_history = zeros(N, ceil(T/dtmin)+1);
+
 	}
 	else{
 		dtmin = dtmax;
@@ -68,10 +83,8 @@ void NBodySolver::setInitialConditions(char* file){
 		masses(i) = mass;
 		init_state << x << y << z << vx << vy << vz;
 		
-		
 		// create and store a body (initially with minimum timestep)
 		b = Body(mass, init_state);
-		b.dt = this->dtmin;
 		bodies.push_back(b);
 		
 		// also store the initial states in states matrix
@@ -81,29 +94,59 @@ void NBodySolver::setInitialConditions(char* file){
 	
 }
 
-void NBodySolver::setMethod(int method){
 	
-}
-	
-void NBodySolver::solve(){
+void NBodySolver::solve() {
 
 	start = clock();
-	while (global_t < T){
+	computeFirstTimesteps();
+	while (global_t <= T){
+		
+		cout << bodies[0].nextEvalTime << endl;
+		
 		recomputeForces();
 		advance();
-		if (adaptive){
+		if (adaptive && time_index % (int) pow(2, n_timesteps-1) == 0 && time_index != 0){
 			recomputeTimesteps();
+			mainNode_n++;
 		}
 		global_t += dtmin;
+		time_index++;
+		
 
 	}
 	stop = clock();
 	
-	cout << "Solved " << N << "-body system in " << (stop-start) << " ticks." << endl;
+	cout << "Solved " << N << "-body system in " << (stop-start) << " ticks" << endl;
+	cout << "using " << (method == 0 ? "Verlet method" : "RK4 method") << endl;
+	cout << "T = " << T << ", N = " << N << " and dt = " << dtmax << endl;
 	if (adaptive){
-		cout << "Used block timesteps " << timesteps << endl;
+		cout << "Used block timesteps " << endl << timesteps << endl;
+	}
+
+}
+
+void NBodySolver::computeFirstTimesteps()
+{
+
+	for (int i=0; i<N; i++){ //initially everyone steps
+		toStep.insert(i);
+	}
+	
+	mat forces = gravity(states);
+	computedFirst = true;
+	a_now = forces.submat(3, 0, 5, N-1);
+	
+	//cout << a_now << endl;
+	
+	for (int i=0; i<N; i++) {
+			bodies[i].force = forces.col(i);
+			bodies[i].dt = roundBestTimestep(0.001/norm(bodies[i].force.rows(3, 5)));
+			bodies[i].setNextEvalTime(global_t + bodies[i].dt);
+		
+
 	}
 }
+
 
 /*
  * Does not really recompute the forces, it simply determines whether the forces
@@ -115,14 +158,18 @@ void NBodySolver::recomputeForces()
 	if (adaptive){
 		toStep.clear();
 		for (int i=0; i<N; i++) {
-		
 			if ((bodies[i].nextEvalTime - global_t) < 1.E-8) {
 				toStep.insert(i);
 			}
-
 		}
 	}
-	rk4();
+	if (method == VERLET){
+		Verlet();
+	}
+	else{
+		rk4();
+	}
+	
 }
 
 void NBodySolver::advance(){
@@ -132,6 +179,7 @@ void NBodySolver::advance(){
 		nextState = bodies[i].state + dtmin*bodies[i].force;
 		bodies[i].addState(nextState);
 		states.col(i) = nextState;
+		step_history(i, time_index) = bodies[i].dt;
 	}
 }
 
@@ -139,14 +187,7 @@ void NBodySolver::advance(){
 void NBodySolver::recomputeTimesteps()
 {
 	for (int i=0; i<N; i++) {
-		if ((bodies[i].nextEvalTime - global_t) < 1.E-8) {
-			bodies[i].dt = roundBestTimestep(0.001/norm(bodies[i].force.rows(3, 5)));
-			bodies[i].setNextEvalTime(global_t + bodies[i].dt);
-			
-			if (i == 1){
-				cout << bodies[i].dt << endl;
-			}
-		}
+		bodies[i].dt = roundBestTimestep(0.001/norm(bodies[i].force.rows(3, 5)));
 	}
 }
 
@@ -163,61 +204,45 @@ void NBodySolver::rk4()
 	for (int i=0; i<N; i++) {
 		if (toStep.find(i) != toStep.end()){
 			bodies[i].force = forces.col(i);
-		} //else do nothing (could be done more neatly)
+		}
 	}
 }
 
 void NBodySolver::Verlet()
 {
-	mat a0 = gravity(states);
-	
-	mat a1 = a0.submat(3, 0, 5, N-1);
-	mat a2 = gravity(states).submat(3, 0, 5, N-1);
-	
-	mat forces = zeros(6, N);
-	forces.submat(3, 0, 5, N-1) = 0.5*(a1 + a2);
-	
-
-	forces.submat(0, 0, 2, N-1) = a0.submat(0, 0, 2, N-1) + 0.5*dtmin*a1;
-
-	for (int i=0; i<N; i++) {
-		if (toStep.find(i) != toStep.end()){
-			bodies[i].force = forces.col(i);
-		} //else do nothing (could be done more neatly)
-	}
 
 }
 
-mat NBodySolver::gravity(mat states)
+mat NBodySolver::gravity(mat state)
 {
 	// use direct summation to calculate force on each body in toStep
-	mat rhs = zeros(6, N);
 	
-	mat pos = zeros(3, N);
-	pos += states.submat(0, 0, 2, N-1);
+	rhs = zeros(6, N);
+	pos = state.submat(0, 0, 2, N-1);
 	
-	vec r_ij = zeros(3);
-	vec a = zeros(3);
 	
 	for (int i=0; i<N; i++) {  //calc. force on body i
 		
-		if (toStep.find(i) != toStep.end()) {
+		if ((toStep.find(i) != toStep.end() && bodies[i].dt == current_dt) || !computedFirst) {
 			
 			a = zeros(3);
 			
 			for (int j=0; j<N; j++) { //add contribution from all j != i
-				if (i != j) {
+				
+				if (i != j){
 					
 					r_ij = pos.col(j)-pos.col(i);
 					a += (G*masses(j)/(pow(norm(r_ij), 3) + norm(r_ij)*pow(eps, 2)))*r_ij;
-					
+				
 				}
-			}
-			rhs.col(i).rows(0, 2) = states.col(i).rows(3, 5);
+			
+			rhs.col(i).rows(0, 2) = state.col(i).rows(3, 5);
 			rhs.col(i).rows(3, 5) = a;
+			//cout << "computed body " << i << endl;
+			}
 		}
-		else{
-			rhs.col(i) = bodies[i].force;
+		else {
+			rhs.col(i) = zeros(6);
 		}
 	}
 	
@@ -251,7 +276,7 @@ void NBodySolver::writeTrajectories(){
 	// iterate over bodies and write to file
 
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.1f_%d.dat", N, T, dtmax, adaptive);
+	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.1f_%d_%d.dat", N, T, dtmax, adaptive, method);
 	
 	ofstream f;
 	f.open(filename);
@@ -288,6 +313,7 @@ void NBodySolver::writeEnergy(){
 			kinetic[j] += 0.5*masses(i)*pow(norm(bodies[i].state_history.col(j).rows(3, 5)), 2);
 		
 		}
+		//cout << " Kinetic: "<< kinetic[j] << endl;
 	}
 	
 	
@@ -302,6 +328,7 @@ void NBodySolver::writeEnergy(){
 				potential[k] -= masses(i)*masses(j)*G/r_ij;
 			}
 		}
+		//cout << " Potential: "<< potential[k] << endl;
 	}
 	
 	
@@ -309,11 +336,11 @@ void NBodySolver::writeEnergy(){
 	total_energy = potential + kinetic;
 	
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_energy_%.0f_%.1f_%d.dat", N, T, dtmax, adaptive);
+	sprintf(filename, "./output/%d_body_energy_%.0f_%.1f_%d_%d.dat", N, T, dtmax, adaptive, method);
 	
 	ofstream f;
 	f.open(filename);
-	f << setprecision(15) << total_energy;
+	f << setprecision(15) << step_history.t();  //total_energy;
 	f.close();
 	cout << "Wrote energy to " << filename << endl;
 	

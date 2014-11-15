@@ -20,6 +20,10 @@
 #include<iomanip>
 #include<ctime>
 #include<cmath>
+#include<mpi.h>
+
+#define VERLET 0
+#define RK4 1
 
 using arma::vec;
 using arma::mat;
@@ -38,13 +42,28 @@ class NBodySolver
 		double dtmax;
 		double dtmin;
 		bool adaptive;
+		bool computedFirst;
 		int n_timesteps;
+		int time_index;
+		int mainNode_n;
+		double current_dt;
 		mat states;
+		mat extrap_states;
 		vec masses;
+		vec a;
+		vec r_ij;
+		mat rhs;
+		mat a_now;
+		mat a_next;
+		mat v_half;
+		mat r_next;
+		mat pos;
 		vec timesteps;
+		mat step_history;
 		vector<Body> bodies;
 		set<int> toStep;
 		clock_t start, stop;
+		int method;
 	
 	public:
 		
@@ -52,10 +71,10 @@ class NBodySolver
 		 * Constructor. Initializes the numerical paramaters
 		 */
 		
-		NBodySolver(int N, double T, double dtmax, bool adaptive);
+		NBodySolver(int N, double T, double dtmax, bool adaptive, int method);
 		
 		/*
-		* Destructor. Destroy the system
+		* Destructor. Destroy the system.
 		*/
 		
 		~NBodySolver();
@@ -65,12 +84,6 @@ class NBodySolver
 		 */
 		
 		void setInitialConditions(char* file);
-	
-		/*
-		 * Set method attribute to either Verlet (0) or RK4 (1)
-		 */
-	
-		void setMethod(int method);
 	
 		/*
 		 * While global_t is less than final time T; advance the bodies.
@@ -110,6 +123,8 @@ class NBodySolver
 		 * dt and nextEvalTime attributes.
 		 */
 	
+		void computeFirstTimesteps();
+	
 		void recomputeTimesteps();
 	
 		/*
@@ -117,7 +132,7 @@ class NBodySolver
 		 * Only calculates the forces on the bodies in toStep.
 		 */
 	
-		mat gravity(mat states);
+		mat gravity(mat state);
 	
 		/*
 		 * Rounds the number dt to the nearest number in timesteps.

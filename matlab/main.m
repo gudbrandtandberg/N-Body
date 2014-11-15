@@ -4,9 +4,19 @@
 function [] = main()
 
 % Load data
-positions = load('../output/13_body_trajectories_100_0.0_0.dat');
-energies = load('../output/13_body_energy_100_0.0_0.dat');
-dt = 0.01;
+positions = load('../output/3_body_trajectories_1_1.0_1_0.dat');
+
+energies_rk4_1 = load('../output/3_body_energy_100_0.0_0_1.dat');
+energies_verlet_1 = load('../output/3_body_energy_100_0.0_0_0.dat');
+energies_rk4_2 = load('../output/3_body_energy_100_0.1_0_1.dat');
+energies_verlet_2 = load('../output/3_body_energy_100_0.1_0_0.dat');
+energies_rk4_3 = load('../output/3_body_energy_100_1.0_0_1.dat');
+energies_verlet_3 = load('../output/3_body_energy_100_1.0_0_0.dat');
+
+dt = 0.0078;
+n1 = size(energies_rk4_1, 1);
+n2 = size(energies_rk4_2, 1);
+n3 = size(energies_rk4_3, 1);
 
 % Animation of system
 
@@ -15,9 +25,30 @@ dt = 0.01;
 %animate(positions, [5 8 9], 'Martian', 5, 0.01, 0.001, dt);
 %animate(positions, [6 10 11 12 13], 'Giovian', 6, 0.02, 0.001, dt);
 
-%static_plot(positions);
+static_plot(positions);
 
-plot_cluster();
+% figure();
+% plot(linspace(0, 100, n1), energies_rk4_1, 'k');
+% hold on
+% plot(linspace(0, 100, n1), energies_verlet_1, 'r');
+% title({'Total mechanical energy vs. time', 'dt = 0.01'});
+% legend('RK4', 'Verlet');
+% 
+% figure();
+% plot(linspace(0, 100, n2), energies_rk4_2, 'k');
+% hold on
+% plot(linspace(0, 100, n2), energies_verlet_2, 'r');
+% title({'Total mechanical energy vs. time', 'dt = 0.1'});
+% legend('RK4', 'Verlet');
+% 
+% figure();
+% plot(linspace(0, 100, n3), energies_rk4_3, 'k');
+% hold on
+% plot(linspace(0, 100, n3), energies_verlet_3, 'r');
+% title({'Total mechanical energy vs. time', 'dt = 1.0'});
+% legend('RK4', 'Verlet');
+
+%plot_cluster();
 
 end
 

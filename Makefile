@@ -1,8 +1,8 @@
 # Makefile for Gudbrand Tandberg's NBODY Project
 # FYS3150 - Computational Physics fall 2014
 
-CC=g++
-C_FLAGS = -O3 -Wno-deprecated
+CC=MPIC++
+C_FLAGS = -O3
 
 
 SRCDIR = source
@@ -16,6 +16,10 @@ ARMA_FLAGS = -larmadillo -framework Accelerate
 
 #link GLUT and OpenGL:
 GL_FLAGS = -framework GLUT -framework OpenGL
+
+#link OpenMPI:
+
+OMP_FLAGS = -fopenmp
 
 ## rules for executables:
 
