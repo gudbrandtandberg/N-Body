@@ -4,13 +4,11 @@
  * Part of Gravitational N-Body Simulations by Gudbrand Tandberg
  * FYS3150 fall 2014
  *
- * Uses block timesteps. Solves the equation (states)' = gravity(states)
- * for 0 < t < T with maximum timestep dtmax.
  * 
  */
 
-#ifndef ODE_H
-#define ODE_H
+#ifndef NBODY_H
+#define NBODY_H
 
 #include"Body.h"
 #include<fstream>
@@ -20,7 +18,6 @@
 #include<iomanip>
 #include<ctime>
 #include<cmath>
-#include<mpi.h>
 
 #define VERLET 0
 #define RK4 1
@@ -38,30 +35,22 @@ class NBodySolver
 		double global_t;
 		double T;
 		double G;
+		double dt;
 		double eps;
-		double dtmax;
-		double dtmin;
-		bool adaptive;
-		bool computedFirst;
-		int n_timesteps;
 		int time_index;
-		int mainNode_n;
-		double current_dt;
 		mat states;
 		mat extrap_states;
 		vec masses;
 		vec a;
+		vec next_state;
 		vec r_ij;
 		mat rhs;
 		mat a_now;
 		mat a_next;
 		mat v_half;
-		mat r_next;
-		mat pos;
-		vec timesteps;
-		mat step_history;
+		mat K1, K2, K3, K4, forces;
+		mat positions;
 		vector<Body> bodies;
-		set<int> toStep;
 		clock_t start, stop;
 		int method;
 	
@@ -71,7 +60,7 @@ class NBodySolver
 		 * Constructor. Initializes the numerical paramaters
 		 */
 		
-		NBodySolver(int N, double T, double dtmax, bool adaptive, int method);
+		NBodySolver(int N, double T, double dt, int method);
 		
 		/*
 		* Destructor. Destroy the system.
@@ -113,39 +102,16 @@ class NBodySolver
 		void Verlet();
 	
 		/*
-		 * Just a shell to prepare toStep before calling rk4()
-		 */
-	
-		void recomputeForces();
-	
-		/*
-		 * Checks which bodies needs to recompute their timestep and sets their 
-		 * dt and nextEvalTime attributes.
-		 */
-	
-		void computeFirstTimesteps();
-	
-		void recomputeTimesteps();
-	
-		/*
-		 * Returns the forces on the bodies given in the state-matrix states.
-		 * Only calculates the forces on the bodies in toStep.
+		 * Return the gravity acting on all the bodies.
 		 */
 	
 		mat gravity(mat state);
-	
-		/*
-		 * Rounds the number dt to the nearest number in timesteps.
-		 */
-	
-		double roundBestTimestep(double dt);
 	
 		/*
 		 * Iterate over the bodies and write them to .dat-file
 		 */
 		
 		void writeTrajectories();
-	
 
 		/*
 		 * Write the total mechanical energy of the system to a file.

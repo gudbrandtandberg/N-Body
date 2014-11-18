@@ -12,11 +12,16 @@ Body::Body(double mass, vec init_state)
 {
 	n = 1;
 	this->mass = mass;
-	this->state = init_state;
+	
 	state_history = zeros(6, n);
-	state_history.col(0) = state;
-	nextEvalTime = 0;
+	state_history.col(0) = init_state;
+	a_now = zeros(3);
+	a_next = zeros(3);
+	v = init_state.rows(3, 5);
+	v_half = zeros(3);
+	r = init_state.rows(0, 2);
 	force = zeros(6);
+	
 }
 
 Body::Body()
@@ -30,27 +35,10 @@ Body::~Body()
 }
 
 void Body::addState(vec state){
-
+	
 	n = state_history.n_cols;
 	state_history.insert_cols(n, state);
-	this->state = state;
-}
-
-void Body::setNextEvalTime(double time){
-	this->nextEvalTime = time;
-}
-
-void Body::print()
-{
-	cout << "======Body=======" << endl;
-	cout << "mass: " << mass << endl;
-	cout << "state: " <<endl;
-	cout << state << endl;
-}
-
-void Body::printTrajectory()
-{
-	for (int i=0; i<state_history.n_cols; i++) {
-		cout << state_history.col(i).t() << endl;
-	}
+	r = state.rows(0, 2);
+	v = state.rows(3, 5);
+	
 }

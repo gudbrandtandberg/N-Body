@@ -8,7 +8,7 @@ C_FLAGS = -O3
 SRCDIR = source
 OBJDIR = objects
 
-MAIN_OBS = objects/main.o objects/Body.o objects/NBodySolver.o
+MAIN_OBS = objects/main.o objects/Body.o objects/NBodySolver.o objects/APNBodySolver.o
 GL_OBS = imageloader.o openGL_solarsystem.o
 
 #link armadillo:
@@ -23,7 +23,7 @@ OMP_FLAGS = -fopenmp
 
 ## rules for executables:
 
-main: objects/main.o objects/Body.o objects/NBodySolver.o
+main: objects/main.o objects/Body.o objects/NBodySolver.o objects/APNBodySolver.o
 	$(CC) $(C_FLAGS) -o $@ $^ $(ARMA_FLAGS)
 
 solar_animation: objects/imageloader.o objects/openGL_solarsystem.o

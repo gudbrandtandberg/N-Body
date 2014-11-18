@@ -1,12 +1,3 @@
-/*
- * Body.h
- *
- * Part of Gravitational N-Body Simulations by Gudbrand Tandberg
- * FYS3150 fall 2014
- *
- *
- */
-
 #ifndef BODY_H
 #define BODY_H
 
@@ -27,46 +18,41 @@ using arma::zeros;
 
 class Body
 {
-	private:
+private:
 	
-		double mass;
-		
-	public:
+	double mass;
 	
-		//make these private! create getter/setter methods. 
-		int n;
-		mat state_history;   // [[x1 y1 z1 vx1 vx2 vx3] ... [xt yt zt vxt vyt vzt]]
-		vec state;			 // [xt yt zt vxt vyt vzt]
-		vec force;
-		double dt;
-		double nextEvalTime;
+public:
 	
-		/*
-		 * Constructor. Sets initial state and empty trajectory
-		 */
-		
-		Body(double mass, vec init_state);
-		Body();
+	//make these private! create getter/setter methods.
+	int n;
+	mat state_history;   // [[x1 y1 z1 vx1 vx2 vx3] ... [xt yt zt vxt vyt vzt]]
+	vec r;
+	vec v;
+	vec v_half;
+	vec a_now;
+	vec a_next;
+	double dt;
+	vec force;
 	
-		/*
-		 * Destructor. Destroy the body. 
-		 */
-		
-		~Body();
+	/*
+	 * Constructor. Sets initial state and empty trajectory
+	 */
 	
-		/*
-		 * Each time a new state has been calculated by NBodySolver, it is added to the body object.
-		 */
+	Body(double mass, vec init_state);
+	Body();
 	
-		void addState(vec state);
+	/*
+	 * Destructor. Destroy the body.
+	 */
 	
-		/*
-		 * Print methods for development purposes
-		 */
+	~Body();
 	
-		void print();
-		void printTrajectory();
-		void setNextEvalTime(double time);
+	/*
+	 * Each time a new state has been calculated by NBodySolver, it is added to the body object.
+	 */
+	
+	void addState(vec state);
 	
 };
 

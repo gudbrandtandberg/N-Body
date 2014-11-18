@@ -11,11 +11,12 @@
  */
 
 #include"NBodySolver.h"
+#include"APNBodySolver.h"
 
 int main(int argc, char **argv)
 {
 	int T, N;
-	double dtmax;
+	double dtmax, dt;
 	bool adaptive = 0;
 	int method = 0;
 	char* infile;
@@ -32,7 +33,7 @@ int main(int argc, char **argv)
 			N = atoi(argv[1]);
 			T = atof(argv[2]);
 			dtmax = atof(argv[3]);
-			
+			dt = atof(argv[3]);
 			switch (N) {
 				case 3:
 					infile = "./initial_conditions/solarsystem3.dat";
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
 		case 1:
 			N = 3;
 			T = 10;
-			dtmax = 1;
+			dt = 1;
 			adaptive = false;
 			infile = "./initial_conditions/solarsystem3.dat";
 			break;
@@ -67,18 +68,30 @@ int main(int argc, char **argv)
 		default:
 			cout << argv[0] << ": Bad usage. Should be run as either " << endl;
 			cout << argv[0] << endl;
-			cout << argv[0] << " N T dtmax" << endl;
-			cout << argv[0] << " N T dtmax adaptive" << endl;
-			cout << argv[0] << " N T dtmax adaptive method" << endl;
+			cout << argv[0] << " N T dt 0 method" << endl;
+			cout << argv[0] << " N T dtmax 1" << endl;
 			exit(1);
 	}
 	
 	
 	// Initialize & solve
-	NBodySolver solver = NBodySolver(N, T, dtmax, adaptive, method);
-	solver.setInitialConditions(infile);
-	solver.solve();
-	solver.writeTrajectories();
-	solver.writeEnergy();
+	if (!adaptive) {
+		
+		NBodySolver solver = NBodySolver(N, T, dt, method);
+		solver.setInitialConditions(infile);
+		solver.solve();
+		solver.writeTrajectories();
+		solver.writeEnergy();
+
+	}
+	else {
+		APNBodySolver solver = APNBodySolver(N, T, dtmax);
+		solver.setInitialConditions(infile);
+		solver.solve();
+		solver.writeTrajectories();
+		solver.writeEnergy();
+		
+	}
+
 }
 

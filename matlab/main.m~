@@ -4,34 +4,115 @@
 function [] = main()
 
 % Load data
-positions = load('../output/13_body_trajectories_100_0.0_0.dat');
-energies = load('../output/13_body_energy_100_0.0_0.dat');
+Vpositions1 = load('../output/6_body_trajectories_619_2.0_0_0.dat');
+Vpositions2 = load('../output/6_body_trajectories_619_1.0_0_0.dat');
+Vpositions3 = load('../output/6_body_trajectories_619_0.1_0_0.dat');
+
+RK4positions1 = load('../output/6_body_trajectories_619_2.0_0_1.dat');
+RK4positions2 = load('../output/6_body_trajectories_619_1.0_0_1.dat');
+RK4positions3 = load('../output/6_body_trajectories_619_0.1_0_1.dat');
+
+RK4energies1 = load('../output/6_body_energy_619_2.0_0_1.dat');
+RK4energies2 = load('../output/6_body_energy_619_1.0_0_1.dat');
+RK4energies3 = load('../output/6_body_energy_619_0.1_0_1.dat');
+
+Venergies1 = load('../output/6_body_energy_619_2.0_0_1.dat');
+Venergies2 = load('../output/6_body_energy_619_1.0_0_1.dat');
+Venergies3 = load('../output/6_body_energy_619_0.1_0_1.dat');
+
+n1 = size(RK4energies1, 1);
+n2 = size(RK4energies2, 1);
+n3 = size(RK4energies3, 1);
+
+T = 619;
+t1 = linspace(0, 619, n1);
+t2 = linspace(0, 619, n2);
+t3 = linspace(0, 619, n3);
+
+figure(1);
+title('Inner solar system trajectories - Verlet method');
+subplot(1, 3, 1);
+static_plot(Vpositions1, 'dt = 2.0');
+subplot(1, 3, 2);
+static_plot(Vpositions1, 'dt = 1.0');
+subplot(1, 3, 3);
+static_plot(Vpositions3, 'dt = 0.1');
+
+figure(2);
+title('Inner solar system trajectories - RK4 method');
+subplot(1, 3, 1);
+static_plot(RK4positions1, 'dt = 2.0');
+subplot(1, 3, 2);
+static_plot(RK4positions1, 'dt = 1.0');
+subplot(1, 3, 3);
+static_plot(RK4positions3, 'dt = 0.1');
+
+figure(3);
+title('Energy evolution of inner solar system - Verlet method');
+
+plot(t1, Venergies1, t2, Venergies2, 'k', t3, Venergies3, 'r');
+xlabel('Time [weeks]');
+ylabel('Energy');
+legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
+
+figure(4);
+title('Energy evolution of inner solar system - RK4 method');
+
+plot(t1, RK4energies1, t2, RK4energies2, 'k', t3, RK4energies3, 'r');
+xlabel('Time [weeks]');
+ylabel('Energy');
+legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
+
 dt = 0.01;
+% n1 = size(energies_rk4_1, 1);
+% n2 = size(energies_rk4_2, 1);
+% n3 = size(energies_rk4_3, 1);
 
 % Animation of system
 
-%animate(positions, 1:13, 'Solar', 1, 5, 0.1, dt);
+%animate(positions, 1:13, 'Solar', 1, 5, 0.05, dt);
 %animate(positions, [4 7], 'Earth-Moon', 4, 0.01, 0.001, dt);
 %animate(positions, [5 8 9], 'Martian', 5, 0.01, 0.001, dt);
 %animate(positions, [6 10 11 12 13], 'Giovian', 6, 0.02, 0.001, dt);
 
 %static_plot(positions);
 
-plot_cluster();
+% figure();
+% plot(linspace(0, 100, n1), energies_rk4_1, 'k');
+% hold on
+% plot(linspace(0, 100, n1), energies_verlet_1, 'r');
+% title({'Total mechanical energy vs. time', 'dt = 0.01'});
+% legend('RK4', 'Verlet');
+% 
+% figure();
+% plot(linspace(0, 100, n2), energies_rk4_2, 'k');
+% hold on
+% plot(linspace(0, 100, n2), energies_verlet_2, 'r');
+% title({'Total mechanical energy vs. time', 'dt = 0.1'});
+% legend('RK4', 'Verlet');
+% 
+% figure();
+% plot(linspace(0, 100, n3), energies_rk4_3, 'k');
+% hold on
+% plot(linspace(0, 100, n3), energies_verlet_3, 'r');
+% title({'Total mechanical energy vs. time', 'dt = 1.0'});
+% legend('RK4', 'Verlet');
+
+%plot_cluster();
 
 end
 
 % Static plot of entire system
-function [] = static_plot(positions)
+function [] = static_plot(positions, tit)
 set(gca, 'FontSize', 16);
 set(gcf, 'Color', 'white');
-AX = 5;
+AX = 6;
 N = size(positions, 2)/3;
 hold on
 for i = 1:N
     plot(positions(:, 3*i-2), positions(:, 3*i-1));
 end
-title('Inner solar system');
+title(tit);
 xlabel('x [AU]');
 ylabel('y [AU]');
 
