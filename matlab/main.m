@@ -4,6 +4,10 @@
 function [] = main()
 
 % Load data
+
+positions = load('../output/13_body_trajectories_619_0.1_1_0.dat');
+%static_plot(positions, 'Adaptive Verlet, dt_{max} = 1.0');
+
 Vpositions1 = load('../output/6_body_trajectories_619_2.0_0_0.dat');
 Vpositions2 = load('../output/6_body_trajectories_619_1.0_0_0.dat');
 Vpositions3 = load('../output/6_body_trajectories_619_0.1_0_0.dat');
@@ -29,76 +33,49 @@ t1 = linspace(0, 619, n1);
 t2 = linspace(0, 619, n2);
 t3 = linspace(0, 619, n3);
 
-figure(1);
-title('Inner solar system trajectories - Verlet method');
-subplot(1, 3, 1);
-static_plot(Vpositions1, 'dt = 2.0');
-subplot(1, 3, 2);
-static_plot(Vpositions2, 'dt = 1.0');
-subplot(1, 3, 3);
-static_plot(Vpositions3, 'dt = 0.1');
-
-figure(2);
-title('Inner solar system trajectories - RK4 method');
-subplot(1, 3, 1);
-static_plot(RK4positions1, 'dt = 2.0');
-subplot(1, 3, 2);
-static_plot(RK4positions2, 'dt = 1.0');
-subplot(1, 3, 3);
-static_plot(RK4positions3, 'dt = 0.1');
-
-figure(3);
-
-plot(t1, Venergies1, t2, Venergies2, 'k', t3, Venergies3, 'r');
-xlabel('Time [weeks]');
-ylabel('Energy');
-legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
-title('Energy evolution of inner solar system - Verlet method');
-
-figure(4);
-
-plot(t1, RK4energies1, t2, RK4energies2, 'k', t3, RK4energies3, 'r');
-xlabel('Time [weeks]');
-ylabel('Energy');
-legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
-title('Energy evolution of inner solar system - RK4 method');
-
-dt = 0.01;
-% n1 = size(energies_rk4_1, 1);
-% n2 = size(energies_rk4_2, 1);
-% n3 = size(energies_rk4_3, 1);
+% figure(1);
+% title('Inner solar system trajectories - Verlet method');
+% subplot(1, 3, 1);
+% static_plot(Vpositions1, 'dt = 2.0');
+% subplot(1, 3, 2);
+% static_plot(Vpositions2, 'dt = 1.0');
+% subplot(1, 3, 3);
+% static_plot(Vpositions3, 'dt = 0.1');
+% 
+% figure(2);
+% title('Inner solar system trajectories - RK4 method');
+% subplot(1, 3, 1);
+% static_plot(RK4positions1, 'dt = 2.0');
+% subplot(1, 3, 2);
+% static_plot(RK4positions2, 'dt = 1.0');
+% subplot(1, 3, 3);
+% static_plot(RK4positions3, 'dt = 0.1');
+% 
+% figure(3);
+% 
+% plot(t1, Venergies1, t2, Venergies2, 'k', t3, Venergies3, 'r');
+% xlabel('Time [weeks]');
+% ylabel('Energy');
+% legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
+% title('Energy evolution of inner solar system - Verlet method');
+% 
+% figure(4);
+% 
+% plot(t1, RK4energies1, t2, RK4energies2, 'k', t3, RK4energies3, 'r');
+% xlabel('Time [weeks]');
+% ylabel('Energy');
+% legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
+% title('Energy evolution of inner solar system - RK4 method');
+% 
+ dt = 0.1;
 
 % Animation of system
 
-%animate(positions, 1:13, 'Solar', 1, 5, 0.05, dt);
+animate(positions, 1:13, 'Solar', 1, 5, 0.05, dt);
 %animate(positions, [4 7], 'Earth-Moon', 4, 0.01, 0.001, dt);
 %animate(positions, [5 8 9], 'Martian', 5, 0.01, 0.001, dt);
 %animate(positions, [6 10 11 12 13], 'Giovian', 6, 0.02, 0.001, dt);
 
-%static_plot(positions);
-
-% figure();
-% plot(linspace(0, 100, n1), energies_rk4_1, 'k');
-% hold on
-% plot(linspace(0, 100, n1), energies_verlet_1, 'r');
-% title({'Total mechanical energy vs. time', 'dt = 0.01'});
-% legend('RK4', 'Verlet');
-% 
-% figure();
-% plot(linspace(0, 100, n2), energies_rk4_2, 'k');
-% hold on
-% plot(linspace(0, 100, n2), energies_verlet_2, 'r');
-% title({'Total mechanical energy vs. time', 'dt = 0.1'});
-% legend('RK4', 'Verlet');
-% 
-% figure();
-% plot(linspace(0, 100, n3), energies_rk4_3, 'k');
-% hold on
-% plot(linspace(0, 100, n3), energies_verlet_3, 'r');
-% title({'Total mechanical energy vs. time', 'dt = 1.0'});
-% legend('RK4', 'Verlet');
-
-%plot_cluster();
 
 end
 

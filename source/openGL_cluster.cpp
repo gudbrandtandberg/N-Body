@@ -32,7 +32,7 @@ static GLenum singleStep = GL_FALSE;
 
 // number of planets to draw
 int N = 100;
-ifstream infile("/Users/gudbrand/Documents/NBODY/output/100_body_trajectories_100_0.1_0.dat");
+ifstream infile;
 
 // temporary coordinates
 float x = 0;
@@ -187,7 +187,6 @@ static void Animate(void)
 }
 
 
-// ResizeWindow is called when the window is resized
 static void ResizeWindow(int w, int h)
 {
     float aspectRatio;
@@ -205,7 +204,6 @@ static void ResizeWindow(int w, int h)
     glMatrixMode(GL_MODELVIEW);
 }
 
-// Load texture
 GLuint loadTexture(Image* image) {
 	GLuint textureId;
 	glGenTextures(1, &textureId); //Make room for our texture
@@ -223,14 +221,13 @@ GLuint loadTexture(Image* image) {
 	return textureId; //Returns the id of the texture
 }
 
-// Initialize OpenGL's rendering modes and load planet textures
 void OpenGLInit(void)
 {
 	
-	glShadeModel( GL_FLAT );
-	glClearColor( 0.0, 0.0, 0.0, 0.0 );
-	glClearDepth( 1.0 );
-	glEnable( GL_DEPTH_TEST );
+	glShadeModel(GL_FLAT);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearDepth(1.0 );
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
 	
@@ -261,25 +258,33 @@ void OpenGLInit(void)
 	
 }
 
-/*  Main program
- *  Set up OpenGL, hook up callbacks, and start the main loop
- */
-
- int main( int argc, char** argv )
+ int main(int argc, char** argv)
 {
+	if (argc < 5) {
+		cout << "Bad usage: must provide input parameters" << endl;
+		cout << "Run as " << endl;
+		cout << argv[0] << " N T dtmax epsilon" << endl;
+		exit(1);
+	}
+	else{
+		char * buffer = new char[100];
+		sprintf(buffer, "./output/%d_body_trajectories_%d_%.1f_1_0.dat", atoi(argv[1]), atoi(argv[2]), atof(argv[3]));
+		cout << buffer << endl;
+		infile.open(buffer);
+	}
+	
+	
 	// Need to double buffer for animation
 	glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
 	// Create and position the graphics window
-    glutInitWindowPosition( 0, 0 );
-    glutInitWindowSize( 1080, 720 );
-    glutCreateWindow( "Solar System Demo" );
+    glutInitWindowPosition(0, 0);
+    glutInitWindowSize(1080, 720);
+    glutCreateWindow("Open cluster simulation");
 
 	// Initialize OpenGL.
     OpenGLInit();
-	
-	
 
 	// Set up callback functions for key presses
 	glutKeyboardFunc(KeyPressFunc);
