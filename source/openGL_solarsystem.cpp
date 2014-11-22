@@ -15,7 +15,7 @@ static GLenum singleStep = GL_FALSE;
 
 // number of planets to draw
 int N = 6;
-ifstream infile("/Users/gudbrand/Documents/NBODY/output/6_body_trajectories_200_0.1_0.dat");
+ifstream infile("./output/6_body_trajectories_200_0.1_0.dat");
 
 // temporary coordinates
 float weekOfYear = 0;
@@ -28,7 +28,7 @@ float z = 0;
 vector<vector<float> > coordinates = vector<vector<float> >(N);
 
 // variables for controlling the camera
-static GLfloat camPos[3]={0,0,3};
+static GLfloat camPos[3]={0,1,2.5};
 static GLfloat lookAt[3]={0,0,0};
 
 // texture for each body
@@ -173,23 +173,6 @@ static void Animate(void)
 	gluLookAt(camPos[0],camPos[1],camPos[2],
 			  lookAt[0], lookAt[1], lookAt[2],
 			  0, 1, 0);
-	
-	//cout << lookAt[0] << " " << lookAt[1] << " " << lookAt[2] << endl;
-
-	// Draw a quad with stars texture
-	glBindTexture(GL_TEXTURE_2D, _starsTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0, 1.0); glVertex3f(-30.0, 20.0, -15.0);
-		glTexCoord2f(0.5, 1.0); glVertex3f(0.0, 20.0, -25.0);
-		glTexCoord2f(1.0, 1.0); glVertex3f(30.0, 20.0, -15.0);
-		glTexCoord2f(1.0, 0.0); glVertex3f(30.0, -20.0, -15.0);
-		glTexCoord2f(0.5, 0.0); glVertex3f(0.0, -20.0, -25.0);
-		glTexCoord2f(0.0, 0.0); glVertex3f(-30.0, -20.0, -15.0);
-	glEnd();
-
 	
 	// Draw the planets
 	for (int i=0; i<N; i++){

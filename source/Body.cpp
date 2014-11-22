@@ -21,6 +21,7 @@ Body::Body(double mass, vec init_state)
 	v_half = zeros(3);
 	r = init_state.rows(0, 2);
 	force = zeros(6);
+	bound = true;
 	
 }
 

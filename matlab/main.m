@@ -5,33 +5,44 @@ function [] = main()
 
 % Load data
 
-positions = load('../output/13_body_trajectories_619_0.1_1_0.dat');
+positions = load('../output/250_body_trajectories_5_0.010_1_0_0_0.10.dat');
+energies = load('../output/250_body_energy_5_0.010_1_0_0_0.10.dat');
+virialenergy = load('../output/250_body_virialenergy_5_0.010_1_0_0_0.10.dat');
+numbound = load('../output/250_body_bound_5_0.010_1_0_0_0.10.dat');
+
+plot(virialenergy);
+figure();
+plot(numbound);
+
 %static_plot(positions, 'Adaptive Verlet, dt_{max} = 1.0');
+%figure();
+%plot(energies);
+%histogram(positions(end, :));
 
-Vpositions1 = load('../output/6_body_trajectories_619_2.0_0_0.dat');
-Vpositions2 = load('../output/6_body_trajectories_619_1.0_0_0.dat');
-Vpositions3 = load('../output/6_body_trajectories_619_0.1_0_0.dat');
+% Vpositions1 = load('../output/6_body_trajectories_619_2.0_0_0.dat');
+% Vpositions2 = load('../output/6_body_trajectories_619_1.0_0_0.dat');
+% Vpositions3 = load('../output/6_body_trajectories_619_0.1_0_0.dat');
+% 
+% RK4positions1 = load('../output/6_body_trajectories_619_2.0_0_1.dat');
+% RK4positions2 = load('../output/6_body_trajectories_619_1.0_0_1.dat');
+% RK4positions3 = load('../output/6_body_trajectories_619_0.1_0_1.dat');
+% 
+% RK4energies1 = load('../output/6_body_energy_619_2.0_0_1.dat');
+% RK4energies2 = load('../output/6_body_energy_619_1.0_0_1.dat');
+% RK4energies3 = load('../output/6_body_energy_619_0.1_0_1.dat');
+% 
+% Venergies1 = load('../output/6_body_energy_619_2.0_0_0.dat');
+% Venergies2 = load('../output/6_body_energy_619_1.0_0_0.dat');
+% Venergies3 = load('../output/6_body_energy_619_0.1_0_0.dat');
+% 
+% n1 = size(RK4energies1, 1);
+% n2 = size(RK4energies2, 1);
+% n3 = size(RK4energies3, 1);
 
-RK4positions1 = load('../output/6_body_trajectories_619_2.0_0_1.dat');
-RK4positions2 = load('../output/6_body_trajectories_619_1.0_0_1.dat');
-RK4positions3 = load('../output/6_body_trajectories_619_0.1_0_1.dat');
-
-RK4energies1 = load('../output/6_body_energy_619_2.0_0_1.dat');
-RK4energies2 = load('../output/6_body_energy_619_1.0_0_1.dat');
-RK4energies3 = load('../output/6_body_energy_619_0.1_0_1.dat');
-
-Venergies1 = load('../output/6_body_energy_619_2.0_0_0.dat');
-Venergies2 = load('../output/6_body_energy_619_1.0_0_0.dat');
-Venergies3 = load('../output/6_body_energy_619_0.1_0_0.dat');
-
-n1 = size(RK4energies1, 1);
-n2 = size(RK4energies2, 1);
-n3 = size(RK4energies3, 1);
-
-T = 619;
-t1 = linspace(0, 619, n1);
-t2 = linspace(0, 619, n2);
-t3 = linspace(0, 619, n3);
+% T = 619;
+% t1 = linspace(0, 619, n1);
+% t2 = linspace(0, 619, n2);
+% t3 = linspace(0, 619, n3);
 
 % figure(1);
 % title('Inner solar system trajectories - Verlet method');
@@ -67,11 +78,11 @@ t3 = linspace(0, 619, n3);
 % legend('dt = 2.0', 'dt = 1.0', 'dt = 0.1');
 % title('Energy evolution of inner solar system - RK4 method');
 % 
- dt = 0.1;
+% dt = 0.1;
 
 % Animation of system
 
-animate(positions, 1:13, 'Solar', 1, 5, 0.05, dt);
+%animate(positions, 1:13, 'Solar', 1, 5, 0.05, dt);
 %animate(positions, [4 7], 'Earth-Moon', 4, 0.01, 0.001, dt);
 %animate(positions, [5 8 9], 'Martian', 5, 0.01, 0.001, dt);
 %animate(positions, [6 10 11 12 13], 'Giovian', 6, 0.02, 0.001, dt);
@@ -145,6 +156,38 @@ for i = 1:n
     pause(0.001);
     axis([-20 20 -20 20 -20 20]);
 end
+
+end
+
+function histogram(positions)
+    N = size(positions, 2)/3;
+    r = zeros(1, N);
+    for i = 1:N
+        r(i) = norm([positions(3*i-2) positions(3*i-1) positions(3*i)]);
+    end
+    
+    [dist, centers] = hist(r, 20);
+    half_width = (centers(2)-centers(1))/2;
+    
+    density = zeros(1, 20);
+    
+    
+    for i=1:20
+        shell_volume = 4*pi*((centers(i)+half_width)^3 - (centers(i)-half_width)^3)/3;
+        density(i) = dist(i)/shell_volume;
+    end
+    
+  
+    
+    figure();
+    n_0 = 200;
+    r_0 = 20;
+    
+    %n_r = n_0./(1+(n./r_0).^4);
+ 
+    plot(density);
+    hold on;
+    %plot(n_r, 'k');
 
 end
 

@@ -24,9 +24,8 @@ private:
 	
 public:
 	
-	//make these private! create getter/setter methods.
 	int n;
-	mat state_history;   // [[x1 y1 z1 vx1 vx2 vx3] ... [xt yt zt vxt vyt vzt]]
+	mat state_history;
 	vec r;
 	vec v;
 	vec v_half;
@@ -34,6 +33,7 @@ public:
 	vec a_next;
 	double dt;
 	vec force;
+	bool bound;
 	
 	/*
 	 * Constructor. Sets initial state and empty trajectory

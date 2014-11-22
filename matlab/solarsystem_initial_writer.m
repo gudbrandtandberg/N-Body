@@ -123,7 +123,7 @@ dlmwrite(sprintf('../initial_conditions/solarsystem%d.dat', n),...
 % Generate N random intial conditions for simulating cold collapse of a
 % galaxy.
 
-N = 100;    % number of 'bodies' in simulation
+N = 1000;    % number of 'bodies' in simulation
 R0 = 20;    % pre-collapse radius in AU
 
 bodies = zeros(N, 7);

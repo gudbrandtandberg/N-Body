@@ -16,8 +16,8 @@ NBodySolver::NBodySolver(int N, double T, double dt, int method){
 	global_t = 0.0;
 	
 	if (N >= 100){
-		G = pow(M_PI, 2)/(2*N*10);
-		eps = 10E-2;
+		G = pow(M_PI, 2)*pow(20, 3)/(80*N);
+		eps = 0.5*10E-1;
 	}
 	else {
 		G = 1.0;
@@ -81,6 +81,9 @@ void NBodySolver::solve() {
 	}
 	
 	while (global_t <= T){
+		
+		printf("Progress: %4.1f %% \r", 100*global_t/T);
+		
 		switch (method){
 			case VERLET:
 				Verlet();
@@ -118,12 +121,10 @@ void NBodySolver::advance(){
 void NBodySolver::rk4()
 {
 
-	
 	K1 = gravity(states);
 	K2 = gravity(states + 0.5*dt*K1);
 	K3 = gravity(states + 0.5*dt*K2);
 	K4 = gravity(states + dt*K3);
-	
 	
 	forces = 1/6.0*(K1 + 2*K2 + 2*K3 + K4);
 	
@@ -134,7 +135,6 @@ void NBodySolver::rk4()
 
 void NBodySolver::Verlet()
 {
-	v_half = zeros(6, N);
 	for (int i=0; i<N; i++) {
 		v_half.col(i).rows(0, 2) = bodies[i].v + 0.5*dt*bodies[i].a_now;
 	}
@@ -176,7 +176,7 @@ void NBodySolver::writeTrajectories(){
 	// iterate over bodies and write to file
 
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.1f_0_%d.dat", N, T, dt, method);
+	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.3f_0_%d.dat", N, T, dt, method);
 	
 	ofstream f;
 	f.open(filename);
@@ -236,7 +236,7 @@ void NBodySolver::writeEnergy(){
 	total_energy = potential + kinetic;
 	
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_energy_%.0f_%.1f_0_%d.dat", N, T, dt, method);
+	sprintf(filename, "./output/%d_body_energy_%.0f_%.3f_0_%d.dat", N, T, dt, method);
 	
 	ofstream f;
 	f.open(filename);

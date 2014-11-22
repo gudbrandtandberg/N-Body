@@ -16,24 +16,27 @@
 int main(int argc, char **argv)
 {
 	int T, N;
+	int cpus = 0;
 	double dtmax, dt;
+	double epsilon = 0.05;
 	bool adaptive = 0;
 	int method = 0;
-	char* infile;
+	char* infile = NULL;
 	
 	// Read options
 	switch (argc){
-	
+		case 8:
+			epsilon = atof(argv[7]);
+		case 7:
+			cpus = atoi(argv[6]);
 		case 6:
 			method = atoi(argv[5]);
-		case 5:
 			adaptive = atoi(argv[4]);
-			
-		case 4:
-			N = atoi(argv[1]);
-			T = atof(argv[2]);
-			dtmax = atof(argv[3]);
 			dt = atof(argv[3]);
+			dtmax = atof(argv[3]);
+			T = atof(argv[2]);
+			N = atoi(argv[1]);
+			
 			switch (N) {
 				case 3:
 					infile = "./initial_conditions/solarsystem3.dat";
@@ -50,6 +53,12 @@ int main(int argc, char **argv)
 				case 100:
 					infile = "./initial_conditions/cluster100.dat";
 					break;
+				case 250:
+					infile = "./initial_conditions/cluster250.dat";
+					break;
+				case 1000:
+					infile = "./initial_conditions/cluster1000.dat";
+					break;
 				default:
 					cout << "Enter infile: ";
 					cin >> infile;
@@ -57,26 +66,17 @@ int main(int argc, char **argv)
 			}
 			break;
 		
-		case 1:
-			N = 3;
-			T = 10;
-			dt = 1;
-			adaptive = false;
-			infile = "./initial_conditions/solarsystem3.dat";
-			break;
 			
 		default:
-			cout << argv[0] << ": Bad usage. Should be run as either " << endl;
-			cout << argv[0] << endl;
-			cout << argv[0] << " N T dt 0 method" << endl;
-			cout << argv[0] << " N T dtmax 1" << endl;
+			cout << argv[0] << ": Bad usage. Should be run as either" << endl;
+			cout << argv[0] << " N T dt adaptive method" << endl;
+			cout << argv[0] << " N T dt adaptive method cpus" << endl;
+			cout << argv[0] << " N T dt adaptive method cpus epsilon" << endl;
 			exit(1);
 	}
 	
-	
 	// Initialize & solve
 	if (!adaptive) {
-		
 		NBodySolver solver = NBodySolver(N, T, dt, method);
 		solver.setInitialConditions(infile);
 		solver.solve();
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
 	}
 	else {
-		APNBodySolver solver = APNBodySolver(N, T, dtmax);
+		APNBodySolver solver = APNBodySolver(N, T, dtmax, cpus, epsilon);
 		solver.setInitialConditions(infile);
 		solver.solve();
 		solver.writeTrajectories();

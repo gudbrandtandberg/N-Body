@@ -31,14 +31,16 @@ static GLenum spinMode = GL_TRUE;
 static GLenum singleStep = GL_FALSE;
 
 // number of planets to draw
-int N = 100;
+int N = 0;
+double dt;
+int time_index = 0;
 ifstream infile;
 
 // temporary coordinates
 float x = 0;
 float y = 0;
 float z = 0;
-vector<vector<float> > coordinates = vector<vector<float> >(N);
+vector<vector<float> > coordinates;
 
 // variables for controlling the camera
 static GLfloat camPos[3]={0,0,40};
@@ -57,7 +59,7 @@ GLUquadric *quad;
 	switch (Key) {
 		case 'R':
 		case 'r':
-			if ( singleStep ) {			// If ending single step mode
+			if (singleStep) {			// If ending single step mode
 				singleStep = GL_FALSE;
 				spinMode = GL_TRUE;		// Restart animation
 			}
@@ -138,7 +140,6 @@ static void Animate(void)
 
     if (spinMode) {
 		// Update the animation state (get new coordinates)
-		
 		for (int i=0; i<N; i++) {
 			if (infile >> coordinates[i][0] >> coordinates[i][1] >> coordinates[i][2]) {
 				
@@ -160,6 +161,13 @@ static void Animate(void)
 			  lookAt[0], lookAt[1], lookAt[2],
 			  0, 1, 0);
 
+	if (abs(time_index*dt - 1) < 0.05) {
+		glColor3f(1, 0, 0);
+	}
+	else {
+		glColor3f(1, 1, 1);
+	}
+	
 	// Draw the bodies
 	for (int i=0; i<N; i++){
 		
@@ -174,6 +182,8 @@ static void Animate(void)
 		glTranslatef(-y, -z, -x);
 	}
 
+
+	
 	// Flush the pipeline, and swap the buffers
     glFlush();
     glutSwapBuffers();
@@ -181,7 +191,7 @@ static void Animate(void)
 	if (singleStep) {
 		spinMode = GL_FALSE;
 	}
-
+	time_index++;
 	glutPostRedisplay();		// Request a re-draw for animation purposes
 
 }
@@ -232,10 +242,10 @@ void OpenGLInit(void)
 	glEnable(GL_COLOR_MATERIAL);
 	
 	// set lighting
-	GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
-	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position0[] = { 0.0, 30, 0.0, 0.0 };
+	GLfloat light_ambient[] = {0.0, 0.0, 0.0, 1.0};
+	GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat light_position0[] = {0.0, 30, 0.0, 0.0};
 
 	
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -247,6 +257,8 @@ void OpenGLInit(void)
 	glEnable(GL_LIGHT0);
 	
 	//initialize coordinates
+	coordinates = vector<vector<float> >(N);
+
 	for (int i=0; i<N; i++){
 		coordinates[i] = vector<float>(3);
 		for (int j=0; j<3; j++) {
@@ -258,45 +270,56 @@ void OpenGLInit(void)
 	
 }
 
- int main(int argc, char** argv)
+int main(int argc, char** argv)
 {
-	if (argc < 5) {
-		cout << "Bad usage: must provide input parameters" << endl;
-		cout << "Run as " << endl;
-		cout << argv[0] << " N T dtmax epsilon" << endl;
-		exit(1);
-	}
-	else{
-		char * buffer = new char[100];
-		sprintf(buffer, "./output/%d_body_trajectories_%d_%.1f_1_0.dat", atoi(argv[1]), atoi(argv[2]), atof(argv[3]));
-		cout << buffer << endl;
-		infile.open(buffer);
+	double epsilon = 0.05;
+	int cpus = 0;
+	
+	switch (argc){
+		case 8:{
+			epsilon = atof(argv[7]);
+		}
+		case 7:{
+			cpus = atoi(argv[6]);
+		}
+		case 6:{
+			char * buffer = new char[100];
+			sprintf(buffer, "./output/%d_body_trajectories_%.0f_%.3f_%d_%d_%d_%.2f.dat", atoi(argv[1]), atof(argv[2]), atof(argv[3]),
+					atoi(argv[4]), atoi(argv[5]), cpus, epsilon);
+			cout << buffer << endl;
+			
+			infile.open(buffer);
+			N = atof(argv[1]);
+			if (atoi(argv[4]) == 1) {
+				dt = atof(argv[3])/4;
+			}
+			else {
+				dt = atof(argv[3]);
+			}
+			
+			break;
+		}
+		default:{
+			cout << argv[0] << ": Bad usage. Should be run as either" << endl;
+			cout << argv[0] << " N T dt adaptive method" << endl;
+			cout << argv[0] << " N T dt adaptive method cpus" << endl;
+			cout << argv[0] << " N T dt adaptive method cpus epsilon" << endl;
+			exit(1);
+		}
 	}
 	
 	
 	// Need to double buffer for animation
 	glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-
-	// Create and position the graphics window
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(1080, 720);
     glutCreateWindow("Open cluster simulation");
-
-	// Initialize OpenGL.
     OpenGLInit();
-
-	// Set up callback functions for key presses
 	glutKeyboardFunc(KeyPressFunc);
 	glutSpecialFunc(SpecialKeyFunc);
-
-	// Set up the callback function for resizing windows
     glutReshapeFunc(ResizeWindow);
-	
-	// Callback for graphics image redrawing
     glutDisplayFunc(Animate);
-	
-	// Start the main loop.  glutMainLoop never returns.
 	glutMainLoop();
 
     return(0);

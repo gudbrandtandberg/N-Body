@@ -20,7 +20,7 @@
 #include<iomanip>
 #include<ctime>
 #include<cmath>
-#include<mpi.h>
+//#include<omp.h>
 
 #define VERLET 0
 #define RK4 1
@@ -35,36 +35,37 @@ class APNBodySolver
 private:
 	
 	int N;
+	int cpus;
+	
 	double global_t;
 	double T;
 	double G;
 	double eps;
 	double dtmax, dtmin, dtmed;
+	double current_dt;
 	
 	bool computedFirst;
-	int n_timesteps;
-	int time_index;
-	double current_dt;
-	mat extrap_positions;
+	
 	vec masses;
 	vec a;
 	vec r_ij;
+	vec next_state;
+	vec timesteps;
+	
+	mat extrap_positions;
 	mat rhs;
 	mat a_now;
 	mat a_next;
-	vec next_state;
 	mat pos;
-	vec timesteps;
 	mat step_history;
+
 	vector<Body> bodies;
-	set<int> toStep;
 	
 	set<int> min;
 	set<int> med;
 	set<int> max;
 	
 	clock_t start, stop;
-	int method;
 	
 public:
 	
@@ -72,7 +73,7 @@ public:
 	 * Constructor. Initializes the numerical paramaters
 	 */
 	
-	APNBodySolver(int N, double T, double dtmax);
+	APNBodySolver(int N, double T, double dtmax, int cpus, double epsilon);
 	
 	/*
 		* Destructor. Destroy the system.

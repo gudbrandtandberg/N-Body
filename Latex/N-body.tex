@@ -7,6 +7,7 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage[latin1]{inputenc}
+\usepackage{float}
 \renewcommand{\abstractname}{}
 
 %\newcommand*{\R}{\mathbb{R}}
@@ -63,7 +64,7 @@ a_i \\
 \label{diffeq}
 \end{equation}
 
-All in all this gives us one 6-dimensional coupled ordinary differential equation for each body, or $6N$ ordinary differential equations. All that is needed to simulate such a system for any descretized period of time $T$ is the initial positions and velocities of all of the bodies along with a rule for how to move the system from one time to the next. Such rules will be dicussed further in the next section.
+From now on we refer to the couple $(r, v)$ as the \emph{state} of a body. All in all this gives us one 6-dimensional coupled ordinary differential equation for each body, or $6N$ ordinary differential equations. All that is needed to simulate such a system for any descretized period of time $T$ is the initial positions and velocities of all of the bodies along with a rule for how to move the system from one time to the next. Such rules will be dicussed further in the next section.
 
 \subsection{Scaling the equations}
 
@@ -93,7 +94,7 @@ In our case
 m^* = \frac{\mathrm{AU}^3}{6.67\cdot10^{-11}\mathrm{m}^3/\mathrm{kg}\cdot\mathrm{s}^2\cdot\mathrm{week}^2} = x \mathrm{kg}
 \]
 
-The only point in the program where the units come into the picture are in the setting up of the initial conditions. All units in the input files for the inner solar system are in these units. 
+The only point in the program where the units come into the picture are in the setting up of the initial conditions. All values in the input files for the inner solar system are in these units. 
 
 \subsection{A brief history the N-Body problem}
 
@@ -153,7 +154,7 @@ where \verb+type+ is either energy or trajectories, \verb+N, T+ and \verb+dt+ ar
 
 \section{Results for the solar system}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \begin{center}
 \caption{Solar system trajectories integrated with the Velocity Verlet method over one Giovian year using three different timesteps}
 \label{}
@@ -161,28 +162,28 @@ where \verb+type+ is either energy or trajectories, \verb+N, T+ and \verb+dt+ ar
 \end{figure}
 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \begin{center}
 \caption{Solar system trajectories integrated with the fourth order Runge-Kutta method over one Giovian year using three different timesteps}
 \label{}
 \end{center}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \begin{center}
 \caption{Evolution of the total mechanical energy of the inner solar system using the Verlet method}
 \label{}
 \end{center}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
 \caption{Evolution of the total mechanical energy of the inner solar system using the fourth order Runge Kutta method}
 \label{}
 \end{center}
 \end{figure}
 
-\begin{table}[htdp]
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{c|c|c}
 $\dt$ & Velocity Verlet & RK4 \\
@@ -215,46 +216,73 @@ The most general approach of allowing each body to move forward with its own uni
 \dtm, \frac{\dtm}{2}, \dots, \frac{\dtm}{2^{n-1}}.
 \end{equation}
 
-To simplify implementation, we choose $n = 3$. This is arguably too few time steps for a significant speedup, but we accept that fact in order to keep the implementation simple. This we have three time scales $\dtm, \dtm/2$ and $\dtm/4$. Another constraint we enforce upon the time steps is that a body may only change its time step at times corresponding to integer multiples of $\dtm$. This also to simplify implementation. One could ask if this is a reasonable constraint, to which the answer must be that this relies greatly upon the value of $\dtm$. If $\dtm$ is kept small enough, dramatic change within each main time step will be kept to a minimum. [CHANGE VALE OF $\dtm$?].
+To simplify implementation, we choose $n = 3$. This is arguably too few time steps for a significant speedup, but we accept that fact in order to keep the implementation simple. Thus we have three time scales $\dtm, \dtm/2$ and $\dtm/4$. Another constraint we enforce upon the time steps is that a body may only change its time step at times corresponding to integer multiples of $\dtm$. This also in order to simplify implementation. One could ask if this is a reasonable constraint, to which the answer must be that this depends greatly upon the value of $\dtm$. If $\dtm$ is kept small enough, dramatic change within each main time step will be kept to a minimum. [CHANGE VALE OF $\dtm$?]. A final simplification is that we only use the Velocity Verlet method of integration. As we saw in the previous section, this method is good enough for our needs, and is much easier to implement. Unfortunately, the Verlet method loses its property of time reversibility when adaptive time steps are allowed. For a interresting solution to this problem, see \cite{adaptive}. 
 
-The solution algorithm can be described in pseudocode as
+The solution algorithm of the \verb+APNBodySolver+ can be described in pseudocode as
 
 \begin{verbatim}
 determine the initial timestep of each of the bodies
 while global time < T
-	twice do
-		twice do
-			update positions of bodies using timestep dtmin
-			global time++
-		
-		update positions of bodies using timestep dtmed
-		
-	update positions of bodies using dtmax
-	
-	compute new timesteps for all the bodies
+    twice do
+        twice do
+            update states of bodies using timestep dtmin
+            global time++
+        update states of bodies using timestep dtmed
+    update states of bodies using timestep dtmax
+    compute new timesteps for all the bodies
 
 \end{verbatim}
 
-The order of updating the states of the bodies can be depicted pictorially as in figure \ref{steps}
+The order of updating the states of the bodies can be depicted pictorially as in figure \ref{steps}.
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=15cm]{figures/steps.png}
-\caption{The order of updating the bodies using the time steps $\dtm$, $\dtm/2$ and $\dtm/4$.}
+\includegraphics[width=12cm]{./figures/steps.png}
+\caption{The order of updating the bodies using the time steps $\dtm$, $\dtm/2$ and $\dtm/4$. The numbers above each arrow tells the order of computations.}
 \label{steps}
 \end{center}
 \end{figure}
 
+A very important implementation detail when using this scheme is hidden away in the pseudocode statement \verb+update states of bodies using timestep dt*+. We noe explain how this step is taken. First, when updating the states of the bodies using the smallest timestep we need to know the value of $a_{i+1}$ for these bodies. This in turn depends upon the positions of \emph{all} the bodies at this timestep. We find these by extrapolating the positions of all the other planets to time $t + \dt_{\mathrm{min}}$. The bodies with larger timesteps are simply moved the correct amount along their current \verb+v_half+ vector. These extrapolated positions are not added to the \verb+state_history+ of the bodies. When going on to compute new states for the bodies using time step $\dt_{\mathrm{med}}$, we can use the current (newly updated) positions of the planets using the smallest time step. The bodies using the largest time step still need to be extrapolated. This is done in the same manner, this time moving $\dt_{\mathrm{med}}$ steps along their \verb+v_half+. Now new states are added twice for the bodies using the medium time step, in order to stay synchronized in time with the other bodies. Finally when computing new states for the bodies using the largest timestep we may use the current positions of all the other bodies along with extrapolated positions of the bodies themselves. New states are added four times for these bodies in order to stay synchronized in time. Although $a_{i+1}$ will always depend upon the positions of \emph{all} the planets at any given time, the function \verb+gravity(states)+ is written in such a way as only to return the gravitational acceleration on the bodies using the time step corresponding to the value of \verb+current_dt+.   
 
-\section{Refined results for the extended solar system}
-Discussion on the efficiency of this solver. 
-OpenGL graphics of inner Solar System.
+The implementation found in \verb+APNBodySolver+ has several weaknesses. A lot could be done to improve the speed of the integration loop as a lot of time is spent simply moving data around, and also several values are computed many times. In return the implementation is easy to understand and the basic idea of using adaptive time steps gets across. If I were to start over I would definitely omit object orientation of the bodies. This seems to me unnecessary encapsulation of data, and going over to a more purely matrix based implementation would have many benefits. Also allowing more time steps would definitely be worth spending some time on. This could be achieved by altering the algorithm presented above with more clever loops and use of modular arithmetic to synchronize and extrapolate nicely.
+
+\section{Refined results for the solar system}
+ 
+Same simulations as above. Also a discussion of parallellization. 
+
+\subsection{OpenGL animation}
+
+As a fun application of the trajectories generated, a 3D animation of the inner solar system was implemented using the OpenGL library. The planets are modelled as textured spheres revolving around the sun. The relative sizes and rotation periods are not to scale, but the trajectories are accurate. The program can be found in \verb+source/OpenGL_solarsystem.cpp+ of the main project page. A executable compiled on a Macbook Pro running OSX 10.9.5 can also be found there. On other architectures the executable should be compileable by running \verb+make solar_animation+ in a terminal. We do not go into implementation details as the code should speak for itself. 
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=12cm]{./figures/ISS_screenshot.png}
+\caption{Screenshot of a run of solar\_animation. From left to right we see Earth, Venus, Mercury, Sun, Jupiter and Mars.}
+\label{default}
+\end{center}
+\end{figure}
+
 
 \section{Further development of the algorithm}
+
+As wee have seen, the final \verb+APNBodySolver+ is quite an advanced and capable solver. Before moving on to our final application of the solver we take a moment to consider what more could be done to beef up the solver. 
+
 \subsection{Faster gravity evaluations}
 
-\section{Application: cold cluster collapse}
+The brute-force method of computing the mutual gravitational attraction between $N$ bodies is a $\mathcal{O}(N^2)$ computation. However there are different ways around this costly computation. One of the more popular is the so-called Barnes-Hut tree-method. This way of computing gravitational attraction is of order $\mathcal{O}(N\log N)$. The method is very neat, and we give a summary of it here. At each gravity evaluation, the volume of integration is first subdivided into eight equal subcells. These subcells are then recursively subdivided until only one body is present in each cell. This gives rise to a oct-tree of subcells; starting at the root node consisting of the entire intagration volume, each descendent will either be a cell containing many bodies and eight descendents of its own, or it will be a cell containing only one body. This tree has to be generated at each gravity evaluation. To compute the gravitational attraction on a body, the tree is traversed from the root node, and if the centre of mass of any other cell is far enough away from the body in question, all the bodies in this cell are considered as one particle located at the centre of mass of this cell. By changing what is meant by 'far enough', the accuracy of the computation varies. If 'far enough' is set to infinity, the algorithm collapses into the brute force evaluation. For more on the Barnes-Hut tree code, see \cite{barneshut} 
+
 \subsection{Smoothing factor}
+
+When simulating large $N$ systems, it often occurs that two or more bodies move arbitrarily close to each other. Thus we often experience the singularity at $r_{ij} = 0$ in \eqref{gravity}. This is both physically and numerically a undesirable effect, that can easily be cured. Physically, because in most cases we are not interrested in point-masses, but rather distributions of mass in space. In fact a 'body' in a simulation could be understood to represent several stars and interstellar dust in some cases. So there are several physical reasons to remove the singularity. Numerically it is undesirable because the effect often is that bodies are 'flung' out of the integration domain and really do the simulation no good after this point. There are several ways of removing the singularity, one particularily simple method is perturbing Newtons' equation slightly to read
+
+\begin{equation}
+a_i = \sum_{j\neq i}\frac{G m_j}{r_{ij}^2 + \epsilon^2}\i_{ij}
+\end{equation}
+
+This modification is actually implemented in \verb+APNBodySolver+, and the value of $\epsilon$ can be given as input to the solver (typically a small number). We study the effect of varying $\epsilon$ in the final section. 
+
+\section{Application: cold cluster collapse}
 \subsection{Introduction}
 \subsection{Results}
 OpenGL animation, discussion on $t_{\mathrm{crunch}}$, virial energy computation, different smoothing \&c. 
@@ -267,59 +295,19 @@ OpenGL animation, discussion on $t_{\mathrm{crunch}}$, virial energy computation
 \bibitem{github}
 	http://github.com/gudbrandtandberg/N-Body
 
-\bibitem{adaptivepaper}
-	Barnes-Hut
+\bibitem{adaptive}
+	'A Time-Symmetric Block Time-Step Algorithm for N-Body Simulations'\\
+	Junichrio Makino, Piet Hut, Murat Kaplan, Hasan Saygin\\
+	\emph{New Astron.} 12 (2006) 124-133
+
+\bibitem{barneshut}
+	'A hierarchical O(N logN) force-calculation algorithm'\\
+	Josh Barnes \& Piet Hut\\
+	\emph{Nature} vol. 324 
 
 \end{thebibliography}
 
-%====================LOGBOOK================================
-\newpage
-\section{Logbook}
 
-\emph{8.10.2014}. 
-Initialized git repo. Created files main.cpp, NBody\_functions.cpp/h, ODESolver.cpp/h. Started shell implementation of ODESolver, helper functions and a possible main-functions. Spent time contemplating some major design issues.
-
-\emph{9.10.2014}.
-Started coding. Discussed many design choices with the group teachers. Renamed ODESolver to NBodySolver and wrote the class Body. Wrote stub implementations of key methods. The flow of the program is unravelling as I work. Plan for the nearest future: get NBodySolver to work using Eulers method and a simple 2-body initial configuration.  
-
-\emph{13.10.2014}.
-Wrote matlab script that generates initial condition files for the solar system. Wrote methods for reading initial conditions and initializing the Solver. Wrote the eulerAdvance()-method and implemented brute force gravitational calculator. Ended up with promising plots with matlab of the solar system (albeit quite inaccurate..). Problem: allow gravity() to live in seperate file. 
-
-\emph{14.10.2014}
-Added Pluto and Halley's comet. Wrote the method advanceRK4() with great success. Achieved stable trajectories for 11 bodies with T = 1000 weeks, dt = 0.05 weeks. 
-
-\emph{14.10.2014}
-Added Phobos \& Deimos. Phobos requires at most hourly timestep! This calls for adaptivity! Added the Giovian planets. Initial configuration is now complete. initial\_writer.m can write any selection of initial conditions for any part of the solar system to be sent to NBodySolver. Extremely satisfying results for the Giovian system. Stable trajectories. 
-
-\emph{15.10.2014}
-Regroup at the lab and start to think about the next steps. The next steps will be: 1) clean up \& comment the code 2) Start writing individual timestep implementation in new branch 3) Test the project again. [After that: parallellization]. 
-
-Finished cleaning up and commenting. Pushed the project. Read several papers on methods of N-Body simulations, and the physics behind. Need to visit the think-tank for some time now. 
-
-\emph{23.10.2014}
-Restructured the project this week. Extremely frustrating problem held me back some days. It is now taken care of. Wrote a first implementation of adaptive stepsize today at the lab. Will have to restructure the program again to allow Richardson method. 
-
-\emph{31.10.2014}
-Haven't written log for some days, oops. The I/O structure of the program has been rewritten to allow more flexibility. The solver works fine with both Verlet and RK4 for single timestep, but does not work with adaptive. Extremely frustrating. Ready to move on, but held back. Reconsidered the flow of the paper, decided which configurations to focus on. Found a openGL project on the internet to base my animations on.
-
-\emph{3.11.2014}
-Worked on making openGL animations over the weekend. Very happy with the result. The inner solar system (6planets) are now whizzing around in 3D with nice textured images and lighting. Simple camera moves are also possible. Will work a bit more on this, but I am for the most part happy with it. 
-
-Rewrote the initialization method; there was no point in using csv-files, much simpler and cleaner using normal whitespace delimited files. Have adopted a more precise naming convention that will be implemented tomorrow. 
-
-Restructured the folder structure. Much better with source, objects, \&c in seperate files. Wrote a better makefile aswell. 
-
-Next few days: decide more concretely on which test cases will be worth studying for the report, make cleaner matlab project (split into main.m and functions.m), and get back  to work on the (still disfunctional) adaptive solver. 
-
-Then: work on the cluster model and start writing report.  
-
-\emph{6.11.2014}
-Discussed OpenGL at the lab with Andreas today. We agree that the results are nice, and postpone any further tweaks till the rest of the project is coming together. Moved the near/far plane of the cluster simulations, so that the spheres do not dissapear. 
-
-Rewrote many of the matlab functions to adopt the new flexible naming convention. Now; no more procrastination - get the adaptive solver to work! (also cut down on the loops that calculate gravity).
-
-
-%====================TODO====================================
 \newpage
 \section{Lenker}
 http://en.wikipedia.org/wiki/Barnes\%E2\%80\%93Hut\_simulation\\

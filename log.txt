@@ -1,0 +1,44 @@
+\section{Logbook}
+
+\emph{8.10.2014}. 
+Initialized git repo. Created files main.cpp, NBody\_functions.cpp/h, ODESolver.cpp/h. Started shell implementation of ODESolver, helper functions and a possible main-functions. Spent time contemplating some major design issues.
+
+\emph{9.10.2014}.
+Started coding. Discussed many design choices with the group teachers. Renamed ODESolver to NBodySolver and wrote the class Body. Wrote stub implementations of key methods. The flow of the program is unravelling as I work. Plan for the nearest future: get NBodySolver to work using Eulers method and a simple 2-body initial configuration.  
+
+\emph{13.10.2014}.
+Wrote matlab script that generates initial condition files for the solar system. Wrote methods for reading initial conditions and initializing the Solver. Wrote the eulerAdvance()-method and implemented brute force gravitational calculator. Ended up with promising plots with matlab of the solar system (albeit quite inaccurate..). Problem: allow gravity() to live in seperate file. 
+
+\emph{14.10.2014}
+Added Pluto and Halley's comet. Wrote the method advanceRK4() with great success. Achieved stable trajectories for 11 bodies with T = 1000 weeks, dt = 0.05 weeks. 
+
+\emph{14.10.2014}
+Added Phobos \& Deimos. Phobos requires at most hourly timestep! This calls for adaptivity! Added the Giovian planets. Initial configuration is now complete. initial\_writer.m can write any selection of initial conditions for any part of the solar system to be sent to NBodySolver. Extremely satisfying results for the Giovian system. Stable trajectories. 
+
+\emph{15.10.2014}
+Regroup at the lab and start to think about the next steps. The next steps will be: 1) clean up \& comment the code 2) Start writing individual timestep implementation in new branch 3) Test the project again. [After that: parallellization]. 
+
+Finished cleaning up and commenting. Pushed the project. Read several papers on methods of N-Body simulations, and the physics behind. Need to visit the think-tank for some time now. 
+
+\emph{23.10.2014}
+Restructured the project this week. Extremely frustrating problem held me back some days. It is now taken care of. Wrote a first implementation of adaptive stepsize today at the lab. Will have to restructure the program again to allow Richardson method. 
+
+\emph{31.10.2014}
+Haven't written log for some days, oops. The I/O structure of the program has been rewritten to allow more flexibility. The solver works fine with both Verlet and RK4 for single timestep, but does not work with adaptive. Extremely frustrating. Ready to move on, but held back. Reconsidered the flow of the paper, decided which configurations to focus on. Found a openGL project on the internet to base my animations on.
+
+\emph{3.11.2014}
+Worked on making openGL animations over the weekend. Very happy with the result. The inner solar system (6planets) are now whizzing around in 3D with nice textured images and lighting. Simple camera moves are also possible. Will work a bit more on this, but I am for the most part happy with it. 
+
+Rewrote the initialization method; there was no point in using csv-files, much simpler and cleaner using normal whitespace delimited files. Have adopted a more precise naming convention that will be implemented tomorrow. 
+
+Restructured the folder structure. Much better with source, objects, \&c in seperate files. Wrote a better makefile aswell. 
+
+Next few days: decide more concretely on which test cases will be worth studying for the report, make cleaner matlab project (split into main.m and functions.m), and get back  to work on the (still disfunctional) adaptive solver. 
+
+Then: work on the cluster model and start writing report.  
+
+\emph{6.11.2014}
+Discussed OpenGL at the lab with Andreas today. We agree that the results are nice, and postpone any further tweaks till the rest of the project is coming together. Moved the near/far plane of the cluster simulations, so that the spheres do not dissapear. 
+
+Rewrote many of the matlab functions to adopt the new flexible naming convention. Now; no more procrastination - get the adaptive solver to work! (also cut down on the loops that calculate gravity).
+

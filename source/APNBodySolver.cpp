@@ -7,53 +7,47 @@
 
 #include"APNBodySolver.h"
 
-APNBodySolver::APNBodySolver(int N, double T, double dtmax){
+APNBodySolver::APNBodySolver(int N, double T, double dtmax, int cpus, double epsilon){
 	
-	this->T = T;
 	this->N = N;
+	this->T = T;
 	this->dtmax = dtmax;
+	this->cpus = cpus;
+	
+	current_dt = 0;
+	computedFirst = false;
 	
 	global_t = 0.0;
 	
 	if (N >= 100){
-		G = pow(M_PI, 2)/(2*N*10);
-		eps = 10E-2;
+		G = (pow(M_PI, 2)*pow(20, 3))/(80*N);
+		eps = epsilon;
 	}
 	else {
 		G = 1.0;
 		eps = 0;
 	}
 	
-	toStep = set<int>();
 	min = set<int>();
 	med = set<int>();
 	max = set<int>();
 	
 	bodies = vector<Body>();
 	masses = zeros(N);
-	pos = zeros(3, N);
+	
+	rhs = zeros(3, N);
 	a_now = zeros(3, N);
 	a_next = zeros(3, N);
-	computedFirst = false;
+	
 	a = zeros(3);
 	r_ij = zeros(3);
 	next_state = zeros(6);
-	rhs = zeros(3, N);
-	time_index = 0;
-	current_dt = 0;
 	extrap_positions = zeros(3, N);
 	
+	dtmed = dtmax/2;
+	dtmin = dtmax/4;
 	
-	n_timesteps = 3;
-	timesteps = zeros(n_timesteps);
-	timesteps(0) = dtmax;
-	
-	for (int i=1; i<n_timesteps; i++) {
-		timesteps(i) = timesteps(i-1)/2;
-	}
-	
-	dtmin = timesteps(n_timesteps-1);
-	dtmed = timesteps(1);
+	timesteps << dtmin << dtmed << dtmax;
 	
 	step_history = zeros(N, ceil(T/dtmin)+1);
 	
@@ -68,7 +62,6 @@ APNBodySolver::~APNBodySolver(){
 void APNBodySolver::setInitialConditions(char* file){
 	
 	ifstream infile(file);
-	
 	Body b;
 	vec init_state = zeros(6);
 	double mass, x, y, z, vx, vy, vz;
@@ -78,13 +71,12 @@ void APNBodySolver::setInitialConditions(char* file){
 		
 		masses(i) = mass;
 		init_state << x << y << z << vx << vy << vz;
-		// create and store a body (initially with minimum timestep)
 		b = Body(mass, init_state);
 		bodies.push_back(b);
-		// also store the initial states in states matrix
-		//states.col(i) = init_state;
 		i++;
 	}
+
+	infile.close();
 	
 }
 
@@ -93,12 +85,13 @@ void APNBodySolver::solve() {
 	
 	
 	start = clock();
-	computeFirstTimesteps();  //computes first timesteps and sets a_now, v, r_now for all bodies
+	
+	computeFirstTimesteps();  //computes first timesteps and sets a_now for all bodies
 	
 	int step = 0;
 	
 	while (global_t < T){
-		step = 0; //set to zero before each main step.
+		step = 0; //keeps track of where we are within a main-step
 		
 		for (int i1 = 0; i1<2; i1++) {
 			for (int i2=0; i2<2; i2++) {
@@ -114,11 +107,11 @@ void APNBodySolver::solve() {
 						
 					}
 					
-					else if (med.find(i) != med.end()){
+					else if (med.find(i) != med.end()){
 						bodies[i].v_half = bodies[i].v + bodies[i].a_now*dtmed/2;
 						extrap_positions.col(i) = bodies[i].r + bodies[i].v_half*(step%2==1?1:2)*dtmin;
 					}
-					else {
+					else {
 						bodies[i].v_half = bodies[i].v + bodies[i].v*dtmax/2;
 						extrap_positions.col(i) = bodies[i].r + bodies[i].v_half*step*dtmin;
 					}
@@ -137,7 +130,7 @@ void APNBodySolver::solve() {
 						bodies[i].a_now = a_next.col(i);
 					}
 				}
-				
+				printf("Progress: %.2f %% \r", 100.0*global_t/T);
 				global_t += dtmin;
 			}
 			
@@ -151,13 +144,12 @@ void APNBodySolver::solve() {
 					
 				}
 				
-				else if (min.find(i) != min.end()){
+				else if (min.find(i) != min.end()){
 					extrap_positions.col(i) = bodies[i].r;
 				}
-				else {
+				else {
 					extrap_positions.col(i) = bodies[i].r + bodies[i].v_half*step*dtmin;
 				}
-				
 				
 			}
 			
@@ -210,7 +202,7 @@ void APNBodySolver::solve() {
 		recomputeTimesteps(); //at every main node
 	}
 	stop = clock();
-	cout << "Solved " << N << "-body system in " << (stop-start) << " ticks" << endl;
+	cout << endl << "Solved " << N << "-body system in " << (stop-start) << " ticks" << endl;
 	cout << "using " << "Verlet method" << endl;
 	cout << "T = " << T << ", N = " << N << " and dt = " << dtmax << endl;
 	cout << "Used block timesteps " << endl << timesteps << endl;
@@ -221,23 +213,26 @@ void APNBodySolver::solve() {
 void APNBodySolver::computeFirstTimesteps()
 {
 	
-	mat states = zeros(3, N);
+	mat positions = zeros(3, N);
+	
 	for (int i=0; i<N; i++) {
-		states.col(i) = bodies[i].r;
+		positions.col(i) = bodies[i].r;
 	}
-	mat accelerations = gravity(states);
+	
+	a_now = gravity(positions);
+	
 	computedFirst = true;
 	for (int i=0; i<N; i++) {
-		bodies[i].a_now = accelerations.col(i);
+		bodies[i].a_now = a_now.col(i);
 		bodies[i].dt = roundBestTimestep(0.001/norm(bodies[i].a_now));
-		cout << 0.001/norm(bodies[i].a_now) << endl;
+
 		if (bodies[i].dt == dtmin){
 			min.insert(i);
 		}
-		else if (bodies[i].dt== dtmed){
+		if (bodies[i].dt == dtmed){
 			med.insert(i);
 		}
-		else{
+		else {
 			max.insert(i);
 		}
 	}
@@ -247,20 +242,16 @@ void APNBodySolver::computeFirstTimesteps()
 void APNBodySolver::recomputeTimesteps()
 {
 	min.clear(); med.clear(); max.clear();
-	cout << "Recomputing " << endl;
+
 	for (int i=0; i<N; i++) {
 		bodies[i].dt = roundBestTimestep(0.001/norm(bodies[i].a_now));
-		cout << 0.001/norm(bodies[i].a_now) << endl;
 		if (bodies[i].dt == dtmin){
-			cout << i << " min" << endl;
 			min.insert(i);
 		}
 		else if (bodies[i].dt== dtmed){
-			cout << i << " med" << endl;
 			med.insert(i);
 		}
 		else{
-			cout << i << " max" << endl;
 			max.insert(i);
 		}
 	}
@@ -271,17 +262,22 @@ mat APNBodySolver::gravity(mat positions)
 {
 	// use direct summation to calculate force on each body with correct timestep
 	
+	
 	for (int i=0; i<N; i++) {  //calc. force on body i
 		
 		if (bodies[i].dt == current_dt || !computedFirst) {
 			
 			a = zeros(3);
 			
+			//#define NUMBER_OF_THREADS 4
+			//#pragma omp parallel for private(r_ij) num_threads(NUMBER_OF_THREADS)
+			
 			for (int j=0; j<N; j++) { //add contribution from all j != i
 				
 				if (i != j){
 					
 					r_ij = positions.col(j)-positions.col(i);
+					
 					a += (G*masses(j)/(pow(norm(r_ij), 3) + norm(r_ij)*pow(eps, 2)))*r_ij;
 					
 				}
@@ -302,7 +298,7 @@ double APNBodySolver::roundBestTimestep(double dt)
 	double smallest = abs(dt-timesteps(0));
 	int smallestInd = 0;
 	
-	for (int i=1; i<n_timesteps; i++) {
+	for (int i=1; i<3; i++) {
 		
 		cmp = abs(timesteps(i)-dt);
 		
@@ -321,13 +317,13 @@ void APNBodySolver::writeTrajectories(){
 	// iterate over bodies and write to file
 	
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.1f_1_0.dat", N, T, dtmax);
+	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.3f_1_0_%d_%.2f.dat", N, T, dtmax, cpus, eps);
 	
 	ofstream f;
 	f.open(filename);
 	
-	int n = bodies[1].state_history.n_cols;
-	cout << n << endl;
+	int n = bodies[0].state_history.n_cols;
+
 	mat trajectories = zeros(n, 3*N);
 	
 	for (int j=0; j<n; j++){
@@ -349,47 +345,87 @@ void APNBodySolver::writeEnergy(){
 	
 	int n = bodies[0].state_history.n_cols;
 	
-	vec kinetic = zeros(n);
-	vec potential = zeros(n);
-	vec total_energy = zeros(n);
-	
-	// compute kinetic energy
-	
-	for (int j=0; j<n; j++){			//iterates over time
-		for (int i=0; i<N; i++){		//iterates over bodies
-			
-			kinetic[j] += 0.5*masses(i)*pow(norm(bodies[i].state_history.col(j).rows(3, 5)), 2);
-			
-		}
-		//cout << " Kinetic: "<< kinetic[j] << endl;
-	}
-	
-	
-	// compute potential energy
+	double KE = 0;
+	double PE = 0;
 	double r_ij = 0;
 	
-	for (int k=0; k<n; k++){      //iterate over time
-		for (int i=0; i<N; i++){  //iterate over pairs of bodies
+	double total_kinetic = 0;
+	double total_potential = 0;
+	
+	vec total_energy = zeros(n);
+	vec virial_energy = zeros(n);
+	
+	vec body_potential = zeros(N);
+	vec body_kinetic = zeros(N);
+	
+	int numbound_now = 0;
+	vec numbound = zeros(n);
+	
+	for (int k=0; k<n; k++){   //iterates over time
+		
+		// compute total and individual potential energy at time index k
+		for (int i=0; i<N; i++){
 			for (int j=i+1; j<N; j++){
 				
 				r_ij = norm(bodies[i].state_history.col(k).rows(0, 2) - bodies[j].state_history.col(k).rows(0, 2));
-				potential[k] -= masses(i)*masses(j)*G/r_ij;
+				
+				PE = masses(i)*masses(j)*G/r_ij;
+				
+				total_potential -= PE;
+				
+				body_potential[i] -= PE/2;
+				body_potential[j] -= PE/2;
 			}
 		}
-		//cout << " Potential: "<< potential[k] << endl;
+		
+		//compute kinetic energy of each body and test if body is bound
+		numbound_now = N;
+		for (int i=0; i<N; i++){
+			
+			KE = 0.5*masses(i)*pow(norm(bodies[i].state_history.col(k).rows(3, 5)), 2);
+			body_kinetic[i] = KE;
+			
+			if (body_kinetic[i] + body_potential[i] > 0) {
+				bodies[i].bound = false;
+				numbound_now--;
+			}
+			
+		}
+		numbound[k] = numbound_now;
+		
+		for (int i=0; i<N; i++) {
+			if (bodies[i].bound) {
+				virial_energy[k] += 2*body_kinetic[i];
+				virial_energy[k] += body_potential[i];
+			}
+		}
+		
+		virial_energy[k] /= numbound[k];  //ensemble average
+		
+		total_energy[k] = total_potential + total_kinetic;
+		body_potential = zeros(N);
+		body_potential = zeros(N);
 	}
 	
-	
-	// write total energy to file
-	total_energy = potential + kinetic;
-	
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_energy_%.0f_%.1f_1_0.dat", N, T, dtmax);
+	sprintf(filename, "./output/%d_body_energy_%.0f_%.3f_1_0_%d_%.2f.dat", N, T, dtmax, cpus, eps);
 	
 	ofstream f;
 	f.open(filename);
 	f << setprecision(15) << total_energy;  //total_energy;
 	f.close();
 	cout << "Wrote energy to " << filename << endl;
+	
+	sprintf(filename, "./output/%d_body_virialenergy_%.0f_%.3f_1_0_%d_%.2f.dat", N, T, dtmax, cpus, eps);
+	f.open(filename);
+	f << setprecision(15) << virial_energy;  //total_energy;
+	f.close();
+	cout << "Wrote virial energy to " << filename << endl;
+	
+	sprintf(filename, "./output/%d_body_bound_%.0f_%.3f_1_0_%d_%.2f.dat", N, T, dtmax, cpus, eps);
+	f.open(filename);
+	f << setprecision(15) << numbound;  //total_energy;
+	f.close();
+	cout << "Wrote number of bound bodies to " << filename << endl;
 	
 }
