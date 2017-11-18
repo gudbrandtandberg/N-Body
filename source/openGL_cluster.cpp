@@ -32,8 +32,10 @@ static GLenum singleStep = GL_FALSE;
 
 // number of planets to draw
 int N = 0;
-double dt;
+int cpus = 0;
+double T, dt;
 int time_index = 0;
+double epsilon = 0.1;
 ifstream infile;
 
 // temporary coordinates
@@ -149,7 +151,7 @@ static void Animate(void)
 			}
 		}
 	}
-
+	
 	// Clear the current matrix (Modelview)
     glLoadIdentity();
 	
@@ -208,7 +210,7 @@ static void ResizeWindow(int w, int h)
 	// Set up the projection view matrix (not very well!)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective( 60.0, aspectRatio, 1.0, 30.0 );
+    gluPerspective(60.0, aspectRatio, 1.0, 30.0);
 
 	// Select the Modelview matrix
     glMatrixMode(GL_MODELVIEW);
@@ -272,43 +274,30 @@ void OpenGLInit(void)
 
 int main(int argc, char** argv)
 {
-	double epsilon = 0.05;
-	int cpus = 0;
-	
-	switch (argc){
-		case 8:{
-			epsilon = atof(argv[7]);
-		}
-		case 7:{
-			cpus = atoi(argv[6]);
-		}
-		case 6:{
-			char * buffer = new char[100];
-			sprintf(buffer, "./output/%d_body_trajectories_%.0f_%.3f_%d_%d_%d_%.2f.dat", atoi(argv[1]), atof(argv[2]), atof(argv[3]),
-					atoi(argv[4]), atoi(argv[5]), cpus, epsilon);
-			cout << buffer << endl;
-			
-			infile.open(buffer);
-			N = atof(argv[1]);
-			if (atoi(argv[4]) == 1) {
-				dt = atof(argv[3])/4;
-			}
-			else {
-				dt = atof(argv[3]);
-			}
-			
-			break;
-		}
-		default:{
-			cout << argv[0] << ": Bad usage. Should be run as either" << endl;
-			cout << argv[0] << " N T dt adaptive method" << endl;
-			cout << argv[0] << " N T dt adaptive method cpus" << endl;
-			cout << argv[0] << " N T dt adaptive method cpus epsilon" << endl;
-			exit(1);
-		}
+	if (argc == 4) {
+		
+	}
+	else if (argc == 6){
+		cpus = atoi(argv[4]);
+		epsilon = atof(argv[5]);
+	}
+	else {
+		cout << argv[0] << ": Bad usage. Should be run as either" << endl;
+		cout << argv[0] << " N T dtmax" << endl;
+		cout << argv[0] << " N T dtmax cpus epsilon" << endl;
+		exit(1);
 	}
 	
+	N = atoi(argv[1]);
+	T = atof(argv[2]);
+	dt = atof(argv[3])/4;
 	
+	char * buffer = new char[100];
+	sprintf(buffer, "./output/%d_body_trajectories_%.0f_1_0_%d_%.2f.dat", N, T, cpus, epsilon);
+	cout << buffer << endl;
+	
+	infile.open(buffer);
+
 	// Need to double buffer for animation
 	glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

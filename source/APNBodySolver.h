@@ -20,7 +20,7 @@
 #include<iomanip>
 #include<ctime>
 #include<cmath>
-//#include<omp.h>
+#include<omp.h>
 
 #define VERLET 0
 #define RK4 1
@@ -34,30 +34,25 @@ class APNBodySolver
 {
 private:
 	
-	int N;
-	int cpus;
+	int N, threads;
 	
-	double global_t;
-	double T;
-	double G;
-	double eps;
-	double dtmax, dtmin, dtmed;
-	double current_dt;
+	double global_t, T, G, eps, eta;
+	double dtmax, dtmin, dtmed, current_dt;
 	
 	bool computedFirst;
 	
 	vec masses;
 	vec a;
-	vec r_ij;
 	vec next_state;
 	vec timesteps;
+	vec pos_now;
+	vec v_half_now;
 	
 	mat extrap_positions;
 	mat rhs;
 	mat a_now;
 	mat a_next;
 	mat pos;
-	mat step_history;
 
 	vector<Body> bodies;
 	
@@ -73,11 +68,11 @@ public:
 	 * Constructor. Initializes the numerical paramaters
 	 */
 	
-	APNBodySolver(int N, double T, double dtmax, int cpus, double epsilon);
+	APNBodySolver(int N, double T, int cpus, double epsilon);
 	
 	/*
-		* Destructor. Destroy the system.
-		*/
+	 * Destructor. Destroy the system.
+	 */
 	
 	~APNBodySolver();
 	
@@ -88,24 +83,30 @@ public:
 	void setInitialConditions(char* file);
 	
 	/*
-	 * While global_t is less than final time T; advance the bodies.
+	 * While global_t is less than final time T: advance the bodies.
 	 * This iteratively updates the 'bodies' object.
 	 */
 	
 	void solve();
 	
 	/*
-	 * Checks which bodies needs to recompute their timestep and sets their
-	 * dt and nextEvalTime attributes.
+	 * Computes the acceleration at initial condition and uses this to set a_now and
+	 * dt attribute. dtmax is determined by finding the smallest acceleration amongst
+	 * the bodies.
 	 */
 	
 	void computeFirstTimesteps();
 	
+	/*
+	 * Resets the dt attribute of each body by using norm(eta/a_now)
+	 */
+	
 	void recomputeTimesteps();
 	
 	/*
-	 * Returns the forces on the bodies given in the state-matrix states.
-	 * Only calculates the forces on the bodies in toStep.
+	 * Returns the forces acting on the bodies given in the matrix state.
+	 * Only calculates the forces on the bodies with body.dt == current_dt.
+	 * Returns zero column for other bodies.
 	 */
 	
 	mat gravity(mat state);
@@ -117,14 +118,15 @@ public:
 	double roundBestTimestep(double dt);
 	
 	/*
-	 * Iterate over the bodies and write them to .dat-file
+	 * Iterate over the bodies and write their trajectories to .dat-file
 	 */
 	
 	void writeTrajectories();
 	
 	
 	/*
-	 * Write the total mechanical energy of the system to a file.
+	 * Do energy/boundedness calculations and write the total mechanical energy, 
+	 * the virial energy and the number of bound bodies of the system to a file.
 	 */
 	
 	void writeEnergy();

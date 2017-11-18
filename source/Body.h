@@ -18,28 +18,21 @@ using arma::zeros;
 
 class Body
 {
-private:
-	
-	double mass;
-	
 public:
 	
 	int n;
-	mat state_history;
-	vec r;
-	vec v;
-	vec v_half;
-	vec a_now;
-	vec a_next;
 	double dt;
-	vec force;
 	bool bound;
 	
+	mat state_history;
+	
+	vec r, v, v_half, a_now, a_next, force;
+
 	/*
 	 * Constructor. Sets initial state and empty trajectory
 	 */
 	
-	Body(double mass, vec init_state);
+	Body(vec init_state);
 	Body();
 	
 	/*

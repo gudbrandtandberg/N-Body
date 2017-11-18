@@ -31,7 +31,7 @@ m_s = AU^3/(G*w^2);    % characteristic mass
 
 % File-writing options
 N = 18;                % # of bodies in total
-n = 13;                % # of bodies to write to file
+n = 11;                % # of bodies to write to file
 
 % Masses of the 18 bodies in units of m_s 
 m = 1/m_s*[1.9891E30 ... %sun
@@ -108,6 +108,9 @@ if n == 3  % sun - earth - moon
 end
 if n == 6  % sun - merc - venus - earth - mars - jupiter
     I = [1 2 3 4 5 6];
+end
+if n == 11
+    I = [1 2 3 4 5 6 11 14 15 16 17];
 end
 if n == 13 % sun -> jupiter - moon - phobos - Galilleian moons
    I = [1 2 3 4 5 6 11 12 13 14 15 16 17];

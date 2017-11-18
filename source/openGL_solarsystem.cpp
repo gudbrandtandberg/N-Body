@@ -15,7 +15,7 @@ static GLenum singleStep = GL_FALSE;
 
 // number of planets to draw
 int N = 6;
-ifstream infile("./output/6_body_trajectories_200_0.1_0.dat");
+ifstream infile("./output/6_body_trajectories_619_0.05_0_0.dat");
 
 // temporary coordinates
 float weekOfYear = 0;
@@ -28,8 +28,8 @@ float z = 0;
 vector<vector<float> > coordinates = vector<vector<float> >(N);
 
 // variables for controlling the camera
-static GLfloat camPos[3]={0,1,2.5};
-static GLfloat lookAt[3]={0,0,0};
+static GLfloat camPos[3]={0,0.3,3.5};
+static GLfloat lookAt[3]={0,0.3,0};
 
 // texture for each body
 GLuint _sunTexture;
@@ -49,7 +49,7 @@ GLUquadric *quad;
 	switch (Key) {
 		case 'R':
 		case 'r':
-			if ( singleStep ) {			// If ending single step mode
+			if (singleStep) {			// If ending single step mode
 				singleStep = GL_FALSE;
 				spinMode = GL_TRUE;		// Restart animation
 			}
@@ -64,15 +64,15 @@ GLUquadric *quad;
 			break;
 			
 		case 'w':
-			camPos[0] += 0.1*(lookAt[0] - camPos[0]);
-			camPos[2] += 0.1*(lookAt[2] - camPos[2]);
+			camPos[0] += 0.2*(lookAt[0] - camPos[0]);
+			camPos[2] += 0.2*(lookAt[2] - camPos[2]);
 			break;
 		case 'a':
 			
 			break;
 		case 's':
-			camPos[0] -= 0.1*(lookAt[0] - camPos[0]);
-			camPos[2] -= 0.1*(lookAt[2] - camPos[2]);
+			camPos[0] -= 0.2*(lookAt[0] - camPos[0]);
+			camPos[2] -= 0.2*(lookAt[2] - camPos[2]);
 			break;
 		case 'd':
 			
@@ -165,7 +165,7 @@ static void Animate(void)
 		}
 		weekOfYear += 1;
 	}
-
+	
 	// Clear the current matrix
     glLoadIdentity();
 	
@@ -276,26 +276,23 @@ void OpenGLInit(void)
 
 	//Load images & apply textures.
 	
-	Image* image = loadBMP("/Users/gudbrand/Documents/NBODY/images/sun.bmp");
+	Image* image = loadBMP("./images/sun.bmp");
 	_sunTexture = loadTexture(image);
 	
-	image = loadBMP("/Users/gudbrand/Documents/NBODY/images/earth.bmp");
+	image = loadBMP("./images/earth.bmp");
 	_earthTexture = loadTexture(image);
 	
-	image = loadBMP("/Users/gudbrand/Documents/NBODY/images/venus.BMP3");
+	image = loadBMP("./images/venus.BMP3");
 	_venusTexture = loadTexture(image);
 	
-	image = loadBMP("/Users/gudbrand/Documents/NBODY/images/mars.BMP3");
+	image = loadBMP("./images/mars.BMP3");
 	_marsTexture = loadTexture(image);
 	
-	image = loadBMP("/Users/gudbrand/Documents/NBODY/images/mercury.BMP3");
+	image = loadBMP("./images/mercury.BMP3");
 	_mercuryTexture = loadTexture(image);
 	
-	image = loadBMP("/Users/gudbrand/Documents/NBODY/images/jupiter.BMP3");
+	image = loadBMP("./images/jupiter.BMP3");
 	_jupiterTexture = loadTexture(image);
-	
-	image = loadBMP("/Users/gudbrand/Documents/NBODY/images/stars.BMP3");
-	_starsTexture = loadTexture(image);
 	
 	delete image;
 	

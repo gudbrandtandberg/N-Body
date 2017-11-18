@@ -9,6 +9,7 @@
 
 #ifndef NBODY_H
 #define NBODY_H
+#define ARMA_NO_DEBUG
 
 #include"Body.h"
 #include<fstream>
@@ -37,7 +38,6 @@ class NBodySolver
 		double G;
 		double dt;
 		double eps;
-		int time_index;
 		mat states;
 		mat extrap_states;
 		vec masses;

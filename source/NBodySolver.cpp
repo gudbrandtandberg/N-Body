@@ -58,7 +58,7 @@ void NBodySolver::setInitialConditions(char* file){
 		init_state << x << y << z << vx << vy << vz;
 		
 		// create and store a body
-		b = Body(mass, init_state);
+		b = Body(init_state);
 		bodies.push_back(b);
 		
 		// also store the initial states in states matrix
@@ -100,7 +100,7 @@ void NBodySolver::solve() {
 	}
 	stop = clock();
 	
-	cout << "Solved " << N << "-body system in " << (stop-start) << " ticks" << endl;
+	cout << "Solved " << N << "-body system in " << (double)(stop-start)/CLOCKS_PER_SEC << " seconds" << endl;
 	cout << "using " << (method == 0 ? "Verlet method" : "RK4 method") << endl;
 	cout << "T = " << T << ", N = " << N << " and dt = " << dt << endl;
 
@@ -176,7 +176,7 @@ void NBodySolver::writeTrajectories(){
 	// iterate over bodies and write to file
 
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.3f_0_%d.dat", N, T, dt, method);
+	sprintf(filename, "./output/%d_body_trajectories_%.0f_%.2f_0_%d.dat", N, T, dt, method);
 	
 	ofstream f;
 	f.open(filename);
@@ -206,14 +206,12 @@ void NBodySolver::writeEnergy(){
 	vec total_energy = zeros(n);
 	
 	// compute kinetic energy
-	
-	for (int j=0; j<n; j++){			//iterates over time
-		for (int i=0; i<N; i++){		//iterates over bodies
+	for (int j=0; j<n; j++){
+		for (int i=0; i<N; i++){
 			
 			kinetic[j] += 0.5*masses(i)*pow(norm(bodies[i].state_history.col(j).rows(3, 5)), 2);
 		
 		}
-		//cout << " Kinetic: "<< kinetic[j] << endl;
 	}
 	
 	
@@ -228,15 +226,13 @@ void NBodySolver::writeEnergy(){
 				potential[k] -= masses(i)*masses(j)*G/r_ij;
 			}
 		}
-		//cout << " Potential: "<< potential[k] << endl;
 	}
-	
 	
 	// write total energy to file
 	total_energy = potential + kinetic;
 	
 	char *filename = new char[50];
-	sprintf(filename, "./output/%d_body_energy_%.0f_%.3f_0_%d.dat", N, T, dt, method);
+	sprintf(filename, "./output/%d_body_energy_%.0f_%.2f_0_%d.dat", N, T, dt, method);
 	
 	ofstream f;
 	f.open(filename);

@@ -8,19 +8,23 @@
 
 #include "Body.h"
 
-Body::Body(double mass, vec init_state)
+Body::Body(vec init_state)
 {
 	n = 1;
-	this->mass = mass;
-	
 	state_history = zeros(6, n);
 	state_history.col(0) = init_state;
+
+	//Used by APNBodySolver
+	r = init_state.rows(0, 2);
+	v = init_state.rows(3, 5);
+
+	v_half = zeros(3);
 	a_now = zeros(3);
 	a_next = zeros(3);
-	v = init_state.rows(3, 5);
-	v_half = zeros(3);
-	r = init_state.rows(0, 2);
+	
+	//Used by NBodySolver
 	force = zeros(6);
+	
 	bound = true;
 	
 }
@@ -37,6 +41,7 @@ Body::~Body()
 
 void Body::addState(vec state){
 	
+	//Incrementally growing matrix, not good..
 	n = state_history.n_cols;
 	state_history.insert_cols(n, state);
 	r = state.rows(0, 2);

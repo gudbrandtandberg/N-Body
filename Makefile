@@ -2,7 +2,7 @@
 # FYS3150 - Computational Physics fall 2014
 
 PCC = MPIC++
-CC = g++
+CC = ~/Downloads/usr/local/bin/g++
 C_FLAGS = -O3 -Wall
 
 SRCDIR = source
@@ -23,7 +23,7 @@ OMP_FLAGS = -fopenmp
 ## rules for executables:
 
 main: $(MAIN_OBS)
-	$(CC) $(C_FLAGS) -o $@ $^ $(ARMA_FLAGS)
+	$(CC) $(C_FLAGS) -L/Users/gudbrand/Downloads/usr/local/lib -lstdc++ -o $@ $^ $(ARMA_FLAGS) $(OMP_FLAGS)
 
 solar_animation: $(SOLAR_OBS)
 	$(CC) $(C_FLAGS) $^ -o $@ $(GL_FLAGS)
@@ -34,7 +34,7 @@ cluster_animation: $(CLUSTER_OBS)
 ## rules for objects:
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	$(CC) $(C_FLAGS) -c $< -o $@
+	$(CC) $(C_FLAGS) -c $< -o $@ -fopenmp
 
 clean:
 	rm -f main solar_animation cluster_animation objects/*
