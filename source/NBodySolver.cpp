@@ -7,6 +7,7 @@
 
 #include"NBodySolver.h"
 
+
 NBodySolver::NBodySolver(int N, double T, double dt, int method){
 		
 	this->T = T;

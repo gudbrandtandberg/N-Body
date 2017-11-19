@@ -3,7 +3,7 @@
 
 %% Part 1 - inner solar system tests and trajectories
 
-positions = load('/Users/gudbrand/Documents/C++/build-NBODY-GCC49-Release/output/6_body_trajectories_201_1_0_4_0.00.dat');
+positions = load('/Users/gudbrand/Programming/N-Body/output/6_body_trajectories_200_1.0_1_0.dat');
 
 static_plot(positions, 'title');
 
@@ -18,7 +18,7 @@ RK4positions3 = load('../output/6_body_trajectories_619_0.05_0_1.dat');
 
 Venergies1 = load('../output/6_body_energy_619_2.00_0_0.dat');
 Venergies2 = load('../output/6_body_energy_619_1.00_0_0.dat');
-Venergies3 = load('../output/6_body_energy_619_0.05_0_0.dat');
+Ve  nergies3 = load('../output/6_body_energy_619_0.05_0_0.dat');
 
 RK4energies1 = load('../output/6_body_energy_619_2.00_0_1.dat');
 RK4energies2 = load('../output/6_body_energy_619_1.00_0_1.dat');

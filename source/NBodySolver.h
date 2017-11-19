@@ -23,9 +23,7 @@
 #define VERLET 0
 #define RK4 1
 
-using arma::vec;
-using arma::mat;
-using arma::norm;
+using namespace arma;
 using namespace std;
 
 class NBodySolver

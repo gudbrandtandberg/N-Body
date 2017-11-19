@@ -11,7 +11,7 @@
  */
 
 #include"NBodySolver.h"
-#include"APNBodySolver.h"
+//#include"APNBodySolver.h"
 
 int main(int argc, char **argv)
 {
@@ -91,11 +91,13 @@ int main(int argc, char **argv)
 
 	}
 	else {
+        /*
 		APNBodySolver solver = APNBodySolver(N, T, cpus, epsilon);
 		solver.setInitialConditions(infile);
 		solver.solve();
 		solver.writeTrajectories();
-		solver.writeEnergy();
+		solver.writeEnergy();*/
+        int i = 0;
 		
 	}
 
