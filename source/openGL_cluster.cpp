@@ -291,6 +291,8 @@ int main(int argc, char** argv)
 	N = atoi(argv[1]);
 	T = atof(argv[2]);
 	dt = atof(argv[3])/4;
+    
+//N = 1000, T = 
 	
 	char * buffer = new char[100];
 	sprintf(buffer, "./output/%d_body_trajectories_%.0f_1_0_%d_%.2f.dat", N, T, cpus, epsilon);
